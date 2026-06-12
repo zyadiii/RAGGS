@@ -9,8 +9,9 @@ public class DBInitializer {
             Connection conn = DBConnection.connect();
             Statement stmt = conn.createStatement()
         ) {
-
-            stmt.execute("""
+            /*
+                ### SAMPLE CODE ###
+                stmt.execute("""
                 CREATE TABLE IF NOT EXISTS users (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     username TEXT UNIQUE NOT NULL,
@@ -18,16 +19,19 @@ public class DBInitializer {
                     role TEXT NOT NULL
                 )
             """);
-
-            stmt.execute("""
-                CREATE TABLE IF NOT EXISTS students (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    studentNo TEXT UNIQUE NOT NULL,
-                    name TEXT NOT NULL,
-                    course TEXT NOT NULL,
-                    yearLevel INTEGER NOT NULL
-                )
-            """);
+            */
+            
+            
+            /* TODO: 
+            
+            Subjects
+            
+            Courses
+            
+            Departments
+            
+                suggest pa kau iba teewoi mwhehe
+            */
 
         } catch (Exception e) {
             e.printStackTrace();
