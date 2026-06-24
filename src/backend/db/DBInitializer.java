@@ -145,6 +145,18 @@ public class DBInitializer {
                 )
             """);
 
+            // Default User
+            stmt.execute("""
+                INSERT OR IGNORE INTO User (
+                    username,
+                    password
+                )
+                VALUES (
+                    'admin',
+                    'admin123'
+                )
+            """);
+
             System.out.println("Database initialized successfully.");
 
         } catch (Exception e) {

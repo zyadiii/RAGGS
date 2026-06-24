@@ -46,12 +46,13 @@ public class LoginWindow extends JFrame {
     }
 
     private void login() {
-
         String username = usernameField.getText();
+        String password = String.valueOf(passwordField.getPassword());
 
-        String password = String.valueOf(
-                passwordField.getPassword()
-        );
+        if (username.isBlank() || password.isBlank()) {
+            JOptionPane.showMessageDialog(this, "Please enter username and password.");
+            return;
+        }
 
         UserDAO dao = new UserDAO();
 
@@ -61,18 +62,11 @@ public class LoginWindow extends JFrame {
         );
 
         if (user != null) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Login Successful"
-            );
-
+            JOptionPane.showMessageDialog(this, "Login Successful");
+            dispose();
+            new MainWindow();
         } else {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Invalid Username or Password"
-            );
+            JOptionPane.showMessageDialog(this, "Invalid Username or Password");
         }
     }
 }

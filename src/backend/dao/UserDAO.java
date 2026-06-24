@@ -59,7 +59,6 @@ public class UserDAO {
     }
 
     public void create(User user) {
-
         String sql = """
                 INSERT INTO User (
                         username,
@@ -72,8 +71,7 @@ public class UserDAO {
                 Connection conn = DBConnection.connect();
                 PreparedStatement pstmt =
                         conn.prepareStatement(sql)
-        ) {
-
+        ){
                 pstmt.setString(
                         1,
                         user.getUsername()
@@ -89,5 +87,29 @@ public class UserDAO {
         } catch (Exception e) {
                 e.printStackTrace();
         }
+        }
+        public void debugUsers() {
+
+                String sql = "SELECT * FROM User";
+
+                try (
+                        Connection conn = DBConnection.connect();
+                        PreparedStatement pstmt = conn.prepareStatement(sql);
+                        ResultSet rs = pstmt.executeQuery()
+                ) {
+
+                        System.out.println("=== USERS IN THIS DB ===");
+
+                        while (rs.next()) {
+                        System.out.println(
+                                rs.getInt("user_id") + " | " +
+                                rs.getString("username") + " | " +
+                                rs.getString("password")
+                        );
+                        }
+
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
         }
 }
