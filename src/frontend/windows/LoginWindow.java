@@ -13,6 +13,7 @@ public class LoginWindow extends JFrame {
     private JPasswordField passwordField;
     private JButton loginButton;
 
+    // Window UI Initialization
     public LoginWindow() {
 
         setTitle("Login");
@@ -45,6 +46,7 @@ public class LoginWindow extends JFrame {
         setVisible(true);
     }
 
+    // Login Service
     private void login() {
         String username = usernameField.getText();
         String password = String.valueOf(passwordField.getPassword());

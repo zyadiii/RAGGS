@@ -1,18 +1,13 @@
 package backend.dao;
 
-import backend.db.DBConnection;
 import backend.models.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class UserDAO {
-
-    public User login(
-            String username,
-            String password
-    ) {
+public class UserDAO extends BaseDAO {
+    public User login(String username, String password) {
 
         String sql = """
                 SELECT *
@@ -22,9 +17,8 @@ public class UserDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt =
-                        conn.prepareStatement(sql)
+            Connection conn = getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
             pstmt.setString(1, username);
@@ -36,17 +30,9 @@ public class UserDAO {
 
                 User user = new User();
 
-                user.setUserId(
-                        rs.getInt("user_id")
-                );
-
-                user.setUsername(
-                        rs.getString("username")
-                );
-
-                user.setPassword(
-                        rs.getString("password")
-                );
+                user.setUserId(rs.getInt("user_id"));
+                user.setUsername(rs.getString("username"));
+                user.setPassword(rs.getString("password"));
 
                 return user;
             }
@@ -59,57 +45,55 @@ public class UserDAO {
     }
 
     public void create(User user) {
+
         String sql = """
                 INSERT INTO User (
-                        username,
-                        password
+                    username,
+                    password
                 )
                 VALUES (?, ?)
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt =
-                        conn.prepareStatement(sql)
-        ){
-                pstmt.setString(
-                        1,
-                        user.getUsername()
-                );
+            Connection conn = getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
 
-                pstmt.setString(
-                        2,
-                        user.getPassword()
-                );
+            pstmt.setString(1, user.getUsername());
+            pstmt.setString(2, user.getPassword());
 
-                pstmt.executeUpdate();
+            pstmt.executeUpdate();
 
         } catch (Exception e) {
-                e.printStackTrace();
+            e.printStackTrace();
         }
+    }
+
+    /**
+     * Check all users currently stored in the database.
+     */
+    public void debugUsers() {
+
+        String sql = "SELECT * FROM User";
+
+        try (
+            Connection conn = getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery()
+        ) {
+
+            System.out.println("=== USERS IN THIS DB ===");
+
+            while (rs.next()) {
+                System.out.println(
+                    rs.getInt("user_id") + " | " +
+                    rs.getString("username") + " | " +
+                    rs.getString("password")
+                );
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        public void debugUsers() {
-
-                String sql = "SELECT * FROM User";
-
-                try (
-                        Connection conn = DBConnection.connect();
-                        PreparedStatement pstmt = conn.prepareStatement(sql);
-                        ResultSet rs = pstmt.executeQuery()
-                ) {
-
-                        System.out.println("=== USERS IN THIS DB ===");
-
-                        while (rs.next()) {
-                        System.out.println(
-                                rs.getInt("user_id") + " | " +
-                                rs.getString("username") + " | " +
-                                rs.getString("password")
-                        );
-                        }
-
-                } catch (Exception e) {
-                        e.printStackTrace();
-                }
-        }
+    }
 }

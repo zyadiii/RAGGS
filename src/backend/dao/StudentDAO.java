@@ -1,6 +1,5 @@
 package backend.dao;
 
-import backend.db.DBConnection;
 import backend.models.Student;
 
 import java.sql.Connection;
@@ -9,8 +8,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StudentDAO {
-
+public class StudentDAO extends BaseDAO {
     public void create(Student student) {
 
         String sql = """
@@ -29,9 +27,8 @@ public class StudentDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt =
-                        conn.prepareStatement(sql)
+            Connection conn = getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
             pstmt.setString(1, student.getFirstName());
@@ -53,63 +50,30 @@ public class StudentDAO {
 
     public List<Student> getAll() {
 
-        List<Student> students =
-                new ArrayList<>();
+        List<Student> students = new ArrayList<>();
 
         String sql = "SELECT * FROM Student";
 
         try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt =
-                        conn.prepareStatement(sql);
-                ResultSet rs =
-                        pstmt.executeQuery()
+            Connection conn = getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery()
         ) {
 
             while (rs.next()) {
 
-                Student student =
-                        new Student();
+                Student student = new Student();
 
-                student.setStudentId(
-                        rs.getInt("student_id")
-                );
-
-                student.setFirstName(
-                        rs.getString("first_name")
-                );
-
-                student.setMiddleName(
-                        rs.getString("middle_name")
-                );
-
-                student.setLastName(
-                        rs.getString("last_name")
-                );
-
-                student.setBirthDate(
-                        rs.getString("birth_date")
-                );
-
-                student.setAddress(
-                        rs.getString("address")
-                );
-
-                student.setContactNo(
-                        rs.getString("contact_no")
-                );
-
-                student.setCitizenship(
-                        rs.getString("citizenship")
-                );
-
-                student.setStatus(
-                        rs.getString("status")
-                );
-
-                student.setBlockId(
-                        rs.getInt("block_id")
-                );
+                student.setStudentId(rs.getInt("student_id"));
+                student.setFirstName(rs.getString("first_name"));
+                student.setMiddleName(rs.getString("middle_name"));
+                student.setLastName(rs.getString("last_name"));
+                student.setBirthDate(rs.getString("birth_date"));
+                student.setAddress(rs.getString("address"));
+                student.setContactNo(rs.getString("contact_no"));
+                student.setCitizenship(rs.getString("citizenship"));
+                student.setStatus(rs.getString("status"));
+                student.setBlockId(rs.getInt("block_id"));
 
                 students.add(student);
             }
@@ -130,60 +94,28 @@ public class StudentDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt =
-                        conn.prepareStatement(sql)
+            Connection conn = getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
             pstmt.setInt(1, studentId);
 
-            ResultSet rs =
-                    pstmt.executeQuery();
+            ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
 
-                Student student =
-                        new Student();
+                Student student = new Student();
 
-                student.setStudentId(
-                        rs.getInt("student_id")
-                );
-
-                student.setFirstName(
-                        rs.getString("first_name")
-                );
-
-                student.setMiddleName(
-                        rs.getString("middle_name")
-                );
-
-                student.setLastName(
-                        rs.getString("last_name")
-                );
-
-                student.setBirthDate(
-                        rs.getString("birth_date")
-                );
-
-                student.setAddress(
-                        rs.getString("address")
-                );
-
-                student.setContactNo(
-                        rs.getString("contact_no")
-                );
-
-                student.setCitizenship(
-                        rs.getString("citizenship")
-                );
-
-                student.setStatus(
-                        rs.getString("status")
-                );
-
-                student.setBlockId(
-                        rs.getInt("block_id")
-                );
+                student.setStudentId(rs.getInt("student_id"));
+                student.setFirstName(rs.getString("first_name"));
+                student.setMiddleName(rs.getString("middle_name"));
+                student.setLastName(rs.getString("last_name"));
+                student.setBirthDate(rs.getString("birth_date"));
+                student.setAddress(rs.getString("address"));
+                student.setContactNo(rs.getString("contact_no"));
+                student.setCitizenship(rs.getString("citizenship"));
+                student.setStatus(rs.getString("status"));
+                student.setBlockId(rs.getInt("block_id"));
 
                 return student;
             }
@@ -213,9 +145,8 @@ public class StudentDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt =
-                        conn.prepareStatement(sql)
+            Connection conn = getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
             pstmt.setString(1, student.getFirstName());
@@ -244,9 +175,8 @@ public class StudentDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt =
-                        conn.prepareStatement(sql)
+            Connection conn = getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
             pstmt.setInt(1, studentId);
@@ -263,19 +193,19 @@ public class StudentDAO {
         String sql = "SELECT COUNT(*) FROM Student";
 
         try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-                ResultSet rs = pstmt.executeQuery()
+            Connection conn = getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery()
         ) {
 
-                if (rs.next()) {
+            if (rs.next()) {
                 return rs.getInt(1);
-                }
+            }
 
         } catch (Exception e) {
-                e.printStackTrace();
+            e.printStackTrace();
         }
 
         return 0;
-        }
+    }
 }

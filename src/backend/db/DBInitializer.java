@@ -157,7 +157,7 @@ public class DBInitializer {
                 )
             """);
 
-            System.out.println("Database initialized successfully.");
+            System.out.println("----- Database initialized successfully. -----");
 
         } catch (Exception e) {
             e.printStackTrace();

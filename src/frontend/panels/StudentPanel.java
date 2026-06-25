@@ -25,7 +25,6 @@ public class StudentPanel extends JPanel {
 
         setLayout(new BorderLayout(10, 10));
 
-        // ================= SEARCH PANEL =================
         JPanel topPanel = new JPanel(new BorderLayout(10, 10));
 
         searchField = new JTextField();
@@ -36,7 +35,6 @@ public class StudentPanel extends JPanel {
 
         add(topPanel, BorderLayout.NORTH);
 
-        // ================= TABLE =================
         String[] columns = {
                 "ID",
                 "First Name",
@@ -48,7 +46,6 @@ public class StudentPanel extends JPanel {
         };
 
         tableModel = new DefaultTableModel(columns, 0) {
-
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -59,10 +56,8 @@ public class StudentPanel extends JPanel {
         studentTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         JScrollPane scrollPane = new JScrollPane(studentTable);
-
         add(scrollPane, BorderLayout.CENTER);
 
-        // ================= BUTTON PANEL =================
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         addButton = new JButton("Add");
@@ -77,21 +72,16 @@ public class StudentPanel extends JPanel {
 
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // ================= ACTIONS =================
         searchButton.addActionListener(e -> searchStudents());
-
         refreshButton.addActionListener(e -> loadStudents());
-
         addButton.addActionListener(e -> addStudent());
-
         editButton.addActionListener(e -> editStudent());
-
         deleteButton.addActionListener(e -> deleteStudent());
 
         loadStudents();
     }
 
-    private void addStudent(){
+    private void addStudent() {
 
         JTextField firstNameField = new JTextField();
         JTextField middleNameField = new JTextField();
@@ -100,13 +90,11 @@ public class StudentPanel extends JPanel {
         JTextField addressField = new JTextField();
         JTextField contactNoField = new JTextField();
         JTextField citizenshipField = new JTextField();
+
         JComboBox<String> statusCombo = new JComboBox<>(
-                new String[]{
-                        "Continuing",
-                        "Regular",
-                        "Dropped"
-                }
+                new String[]{"Continuing", "Regular", "Dropped"}
         );
+
         JTextField blockIdField = new JTextField();
 
         JPanel panel = new JPanel(new GridLayout(0, 2));
@@ -146,12 +134,9 @@ public class StudentPanel extends JPanel {
                 JOptionPane.PLAIN_MESSAGE
         );
 
-        if (result != JOptionPane.OK_OPTION) {
-            return;
-        }
+        if (result != JOptionPane.OK_OPTION) return;
 
         try {
-
             Student student = new Student();
 
             student.setFirstName(firstNameField.getText());
@@ -161,104 +146,55 @@ public class StudentPanel extends JPanel {
             student.setAddress(addressField.getText());
             student.setContactNo(contactNoField.getText());
             student.setCitizenship(citizenshipField.getText());
-            student.setStatus(
-                    statusCombo.getSelectedItem().toString()
-            );
-            student.setBlockId(
-                    Integer.parseInt(blockIdField.getText())
-            );
+            student.setStatus((String) statusCombo.getSelectedItem());
+            student.setBlockId(Integer.parseInt(blockIdField.getText()));
 
-            StudentDAO studentDAO = new StudentDAO();
+            new StudentDAO().create(student);
 
-            studentDAO.create(student);
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Student added successfully."
-            );
-
+            JOptionPane.showMessageDialog(this, "Student added successfully.");
             loadStudents();
 
         } catch (Exception ex) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Failed to add student.\n" + ex.getMessage()
-            );
+            JOptionPane.showMessageDialog(this,
+                    "Failed to add student.\n" + ex.getMessage());
         }
     }
-    
-    private void editStudent(){
+
+    private void editStudent() {
+
         int row = studentTable.getSelectedRow();
 
         if (row == -1) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Please select a student."
-            );
-
+            JOptionPane.showMessageDialog(this, "Please select a student.");
             return;
         }
 
         int studentId = (int) tableModel.getValueAt(row, 0);
 
         StudentDAO studentDAO = new StudentDAO();
-
         Student student = studentDAO.getById(studentId);
 
         if (student == null) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Student not found."
-            );
-
+            JOptionPane.showMessageDialog(this, "Student not found.");
             return;
         }
 
-        JTextField firstNameField =
-                new JTextField(student.getFirstName());
+        JTextField firstNameField = new JTextField(student.getFirstName());
+        JTextField middleNameField = new JTextField(student.getMiddleName());
+        JTextField lastNameField = new JTextField(student.getLastName());
+        JTextField birthDateField = new JTextField(student.getBirthDate());
+        JTextField addressField = new JTextField(student.getAddress());
+        JTextField contactField = new JTextField(student.getContactNo());
+        JTextField citizenshipField = new JTextField(student.getCitizenship());
+        JTextField blockIdField = new JTextField(String.valueOf(student.getBlockId()));
 
-        JTextField middleNameField =
-                new JTextField(student.getMiddleName());
-
-        JTextField lastNameField =
-                new JTextField(student.getLastName());
-
-        JTextField birthDateField =
-                new JTextField(student.getBirthDate());
-
-        JTextField addressField =
-                new JTextField(student.getAddress());
-
-        JTextField contactField =
-                new JTextField(student.getContactNo());
-
-        JTextField citizenshipField =
-                new JTextField(student.getCitizenship());
-
-        JTextField blockIdField =
-                new JTextField(
-                        String.valueOf(student.getBlockId())
-                );
-
-        JComboBox<String> statusCombo =
-                new JComboBox<>(
-                        new String[]{
-                                "Continuing",
-                                "Regular",
-                                "Dropped"
-                        }
-                );
-
-        statusCombo.setSelectedItem(
-                student.getStatus()
+        JComboBox<String> statusCombo = new JComboBox<>(
+                new String[]{"Continuing", "Regular", "Dropped"}
         );
 
-        JPanel panel = new JPanel(
-                new GridLayout(0, 2, 5, 5)
-        );
+        statusCombo.setSelectedItem(student.getStatus());
+
+        JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
 
         panel.add(new JLabel("First Name:"));
         panel.add(firstNameField);
@@ -295,81 +231,36 @@ public class StudentPanel extends JPanel {
                 JOptionPane.PLAIN_MESSAGE
         );
 
-        if (result != JOptionPane.OK_OPTION) {
-            return;
-        }
+        if (result != JOptionPane.OK_OPTION) return;
 
         try {
-
-            student.setFirstName(
-                    firstNameField.getText()
-            );
-
-            student.setMiddleName(
-                    middleNameField.getText()
-            );
-
-            student.setLastName(
-                    lastNameField.getText()
-            );
-
-            student.setBirthDate(
-                    birthDateField.getText()
-            );
-
-            student.setAddress(
-                    addressField.getText()
-            );
-
-            student.setContactNo(
-                    contactField.getText()
-            );
-
-            student.setCitizenship(
-                    citizenshipField.getText()
-            );
-
-            student.setStatus(
-                    (String) statusCombo.getSelectedItem()
-            );
-
-            student.setBlockId(
-                    Integer.parseInt(
-                            blockIdField.getText().trim()
-                    )
-            );
+            student.setFirstName(firstNameField.getText());
+            student.setMiddleName(middleNameField.getText());
+            student.setLastName(lastNameField.getText());
+            student.setBirthDate(birthDateField.getText());
+            student.setAddress(addressField.getText());
+            student.setContactNo(contactField.getText());
+            student.setCitizenship(citizenshipField.getText());
+            student.setStatus((String) statusCombo.getSelectedItem());
+            student.setBlockId(Integer.parseInt(blockIdField.getText().trim()));
 
             studentDAO.update(student);
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Student updated successfully."
-            );
-
+            JOptionPane.showMessageDialog(this, "Student updated successfully.");
             loadStudents();
 
         } catch (Exception ex) {
-
-            ex.printStackTrace();
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Failed to update student.\n"
-                            + ex.getMessage()
-            );
+            JOptionPane.showMessageDialog(this,
+                    "Failed to update student.\n" + ex.getMessage());
         }
     }
-    
-    private void deleteStudent(){
+
+    private void deleteStudent() {
+
         int row = studentTable.getSelectedRow();
 
         if (row == -1) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Please select a student."
-            );
-
+            JOptionPane.showMessageDialog(this, "Please select a student.");
             return;
         }
 
@@ -382,32 +273,16 @@ public class StudentPanel extends JPanel {
                 JOptionPane.YES_NO_OPTION
         );
 
-        if (choice != JOptionPane.YES_OPTION) {
-            return;
-        }
+        if (choice != JOptionPane.YES_OPTION) return;
 
         try {
-
-            StudentDAO studentDAO = new StudentDAO();
-
-            studentDAO.delete(studentId);
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Student deleted successfully."
-            );
-
+            new StudentDAO().delete(studentId);
+            JOptionPane.showMessageDialog(this, "Student deleted successfully.");
             loadStudents();
 
         } catch (Exception ex) {
-
-            ex.printStackTrace();
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Failed to delete student.\n" +
-                    ex.getMessage()
-            );
+            JOptionPane.showMessageDialog(this,
+                    "Failed to delete student.\n" + ex.getMessage());
         }
     }
 
@@ -415,18 +290,11 @@ public class StudentPanel extends JPanel {
 
         tableModel.setRowCount(0);
 
-        StudentDAO studentDAO = new StudentDAO();
-
-        List<Student> students = studentDAO.getAll();
-
-        if (students == null) {
-            return;
-        }
+        List<Student> students = new StudentDAO().getAll();
+        if (students == null) return;
 
         for (Student student : students) {
-            if (student == null) {
-                continue;
-            }
+            if (student == null) continue;
 
             tableModel.addRow(new Object[]{
                     student.getStudentId(),
@@ -450,17 +318,13 @@ public class StudentPanel extends JPanel {
         }
 
         try {
-
             int studentId = Integer.parseInt(input);
 
-            StudentDAO studentDAO = new StudentDAO();
-
-            Student student = studentDAO.getById(studentId);
+            Student student = new StudentDAO().getById(studentId);
 
             tableModel.setRowCount(0);
 
             if (student != null) {
-
                 tableModel.addRow(new Object[]{
                         student.getStudentId(),
                         student.getFirstName(),
@@ -470,21 +334,13 @@ public class StudentPanel extends JPanel {
                         student.getStatus(),
                         student.getContactNo()
                 });
-
             } else {
-
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Student not found."
-                );
+                JOptionPane.showMessageDialog(this, "Student not found.");
             }
 
         } catch (NumberFormatException e) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Please enter a valid Student ID."
-            );
+            JOptionPane.showMessageDialog(this,
+                    "Please enter a valid Student ID.");
         }
     }
 }

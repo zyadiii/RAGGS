@@ -24,9 +24,7 @@ public class DashboardPanel extends JPanel {
         enrollmentCountLabel = createCard("Enrollments", "0");
         instructorCountLabel = createCard("Instructors", "0");
 
-        JPanel cardPanel = new JPanel(
-                new GridLayout(2, 2, 20, 20)
-        );
+        JPanel cardPanel = new JPanel(new GridLayout(2, 2, 20, 20));
 
         cardPanel.add(studentCountLabel);
         cardPanel.add(courseCountLabel);
@@ -36,10 +34,7 @@ public class DashboardPanel extends JPanel {
         add(cardPanel, BorderLayout.CENTER);
 
         JButton refreshButton = new JButton("Refresh");
-
-        refreshButton.addActionListener(
-                e -> loadCounts()
-        );
+        refreshButton.addActionListener(e -> loadCounts());
 
         add(refreshButton, BorderLayout.SOUTH);
 
@@ -64,6 +59,7 @@ public class DashboardPanel extends JPanel {
     }
 
     private void loadCounts() {
+
         StudentDAO studentDAO = new StudentDAO();
         CourseDAO courseDAO = new CourseDAO();
         EnrollmentDAO enrollmentDAO = new EnrollmentDAO();
@@ -78,27 +74,16 @@ public class DashboardPanel extends JPanel {
     }
 
     public void updateCounts(
-        int students,
-        int courses,
-        int enrollments,
-        int instructors
+            int students,
+            int courses,
+            int enrollments,
+            int instructors
     ) {
 
-        studentCountLabel.setText(
-                html("Students", students)
-        );
-
-        courseCountLabel.setText(
-                html("Courses", courses)
-        );
-
-        enrollmentCountLabel.setText(
-                html("Enrollments", enrollments)
-        );
-
-        instructorCountLabel.setText(
-                html("Instructors", instructors)
-        );
+        studentCountLabel.setText(html("Students", students));
+        courseCountLabel.setText(html("Courses", courses));
+        enrollmentCountLabel.setText(html("Enrollments", enrollments));
+        instructorCountLabel.setText(html("Instructors", instructors));
     }
 
     private String html(String title, int value) {

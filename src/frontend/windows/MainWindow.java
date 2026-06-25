@@ -24,7 +24,7 @@ public class MainWindow extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // ================= SIDEBAR =================
+        // -------------- SIDEBAR ----------------
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new GridLayout(6, 1, 10, 10));
 
@@ -44,7 +44,7 @@ public class MainWindow extends JFrame {
 
         add(sidebar, BorderLayout.WEST);
 
-        // ================= CONTENT AREA =================
+        // -------------- MAIN AREA --------------
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
 
@@ -62,7 +62,7 @@ public class MainWindow extends JFrame {
 
         add(contentPanel, BorderLayout.CENTER);
 
-        // ================= BUTTON ACTIONS =================
+        // -------------- BUTTON ACTIONS --------------
         dashboardBtn.addActionListener(e -> cardLayout.show(contentPanel, "dashboard"));
         studentBtn.addActionListener(e -> cardLayout.show(contentPanel, "students"));
         courseBtn.addActionListener(e -> cardLayout.show(contentPanel, "courses"));

@@ -1,6 +1,5 @@
 package backend.dao;
 
-import backend.db.DBConnection;
 import backend.models.Block;
 
 import java.sql.Connection;
@@ -9,9 +8,12 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockDAO {
-
+public class BlockDAO extends BaseDAO  {
     public void create(Block block) {
+        /**
+         * Creates new block (section) of student
+         */
+
         String sql = """
                 INSERT INTO Block (
                     block_name,
@@ -21,58 +23,45 @@ public class BlockDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
+            Connection conn = getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
-            pstmt.setString(
-                    1,
-                    block.getBlockName()
-            );
-
-            pstmt.setInt(
-                    2,
-                    block.getProgramId()
-            );
-
+            pstmt.setString(1, block.getBlockName());
+            pstmt.setInt(2, block.getProgramId());
             pstmt.executeUpdate();
 
-        } catch (Exception e) {
+        } catch(Exception e){
             e.printStackTrace();
         }
     }
 
-    public List<Block> getAll() {
+    public List<Block> getAll(){
+
+        /**
+         * Gets all available blocks from DB
+         */
+
         List<Block> blocks = new ArrayList<>();
 
         String sql = "SELECT * FROM Block";
 
         try (
-                Connection conn = DBConnection.connect();
+                Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql);
                 ResultSet rs = pstmt.executeQuery()
         ) {
 
-            while (rs.next()) {
-
+            while (rs.next()){
                 Block block = new Block();
 
-                block.setBlockId(
-                        rs.getInt("block_id")
-                );
-
-                block.setBlockName(
-                        rs.getString("block_name")
-                );
-
-                block.setProgramId(
-                        rs.getInt("program_id")
-                );
+                block.setBlockId(rs.getInt("block_id"));
+                block.setBlockName(rs.getString("block_name"));
+                block.setProgramId(rs.getInt("program_id"));
 
                 blocks.add(block);
             }
-
-        } catch (Exception e) {
+        } catch (Exception e){
             e.printStackTrace();
         }
 
@@ -80,7 +69,9 @@ public class BlockDAO {
     }
 
     public Block getById(int blockId) {
-
+        /**
+         * Gets all available block from by db through block_id
+         */
         String sql = """
                 SELECT *
                 FROM Block
@@ -88,7 +79,7 @@ public class BlockDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
+                Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
@@ -97,20 +88,11 @@ public class BlockDAO {
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-
                 Block block = new Block();
 
-                block.setBlockId(
-                        rs.getInt("block_id")
-                );
-
-                block.setBlockName(
-                        rs.getString("block_name")
-                );
-
-                block.setProgramId(
-                        rs.getInt("program_id")
-                );
+                block.setBlockId(rs.getInt("block_id"));
+                block.setBlockName(rs.getString("block_name"));
+                block.setProgramId(rs.getInt("program_id"));
 
                 return block;
             }
@@ -123,7 +105,9 @@ public class BlockDAO {
     }
 
     public void update(Block block) {
-
+        /**
+         * Update for block
+         */
         String sql = """
                 UPDATE Block
                 SET
@@ -133,24 +117,13 @@ public class BlockDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
+                Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
-            pstmt.setString(
-                    1,
-                    block.getBlockName()
-            );
-
-            pstmt.setInt(
-                    2,
-                    block.getProgramId()
-            );
-
-            pstmt.setInt(
-                    3,
-                    block.getBlockId()
-            );
+            pstmt.setString(1, block.getBlockName());
+            pstmt.setInt(2, block.getProgramId());
+            pstmt.setInt(3, block.getBlockId());
 
             pstmt.executeUpdate();
 
@@ -160,16 +133,18 @@ public class BlockDAO {
     }
 
     public void delete(int blockId) {
-
+        /**
+         * Delete for block
+         */
         String sql = """
                 DELETE FROM Block
                 WHERE block_id = ?
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
+                Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        ){
 
             pstmt.setInt(1, blockId);
 

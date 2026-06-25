@@ -1,6 +1,5 @@
 package backend.dao;
 
-import backend.db.DBConnection;
 import backend.models.Instructor;
 
 import java.sql.Connection;
@@ -9,8 +8,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InstructorDAO {
-
+public class InstructorDAO extends BaseDAO {
     public void create(Instructor instructor) {
 
         String sql = """
@@ -24,29 +22,14 @@ public class InstructorDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
+                Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
-            pstmt.setString(
-                    1,
-                    instructor.getFirstName()
-            );
-
-            pstmt.setString(
-                    2,
-                    instructor.getMiddleName()
-            );
-
-            pstmt.setString(
-                    3,
-                    instructor.getLastName()
-            );
-
-            pstmt.setInt(
-                    4,
-                    instructor.getDepartmentId()
-            );
+            pstmt.setString(1, instructor.getFirstName());
+            pstmt.setString(2, instructor.getMiddleName());
+            pstmt.setString(3, instructor.getLastName());
+            pstmt.setInt(4, instructor.getDepartmentId());
 
             pstmt.executeUpdate();
 
@@ -57,40 +40,32 @@ public class InstructorDAO {
 
     public List<Instructor> getAll() {
 
-        List<Instructor> instructors =
-                new ArrayList<>();
+        List<Instructor> instructors = new ArrayList<>();
 
         String sql = "SELECT * FROM Instructor";
 
         try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt =
-                        conn.prepareStatement(sql);
-                ResultSet rs =
-                        pstmt.executeQuery()
+                Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                ResultSet rs = pstmt.executeQuery()
         ) {
 
             while (rs.next()) {
 
-                Instructor instructor =
-                        new Instructor();
+                Instructor instructor = new Instructor();
 
                 instructor.setInstructorId(
                         rs.getInt("instructor_id")
                 );
-
                 instructor.setFirstName(
                         rs.getString("first_name")
                 );
-
                 instructor.setMiddleName(
                         rs.getString("middle_name")
                 );
-
                 instructor.setLastName(
                         rs.getString("last_name")
                 );
-
                 instructor.setDepartmentId(
                         rs.getInt("department_id")
                 );
@@ -105,9 +80,7 @@ public class InstructorDAO {
         return instructors;
     }
 
-    public Instructor getById(
-            int instructorId
-    ) {
+    public Instructor getById(int instructorId) {
 
         String sql = """
                 SELECT *
@@ -116,40 +89,30 @@ public class InstructorDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt =
-                        conn.prepareStatement(sql)
+                Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
-            pstmt.setInt(
-                    1,
-                    instructorId
-            );
+            pstmt.setInt(1, instructorId);
 
-            ResultSet rs =
-                    pstmt.executeQuery();
+            ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
 
-                Instructor instructor =
-                        new Instructor();
+                Instructor instructor = new Instructor();
 
                 instructor.setInstructorId(
                         rs.getInt("instructor_id")
                 );
-
                 instructor.setFirstName(
                         rs.getString("first_name")
                 );
-
                 instructor.setMiddleName(
                         rs.getString("middle_name")
                 );
-
                 instructor.setLastName(
                         rs.getString("last_name")
                 );
-
                 instructor.setDepartmentId(
                         rs.getInt("department_id")
                 );
@@ -164,9 +127,7 @@ public class InstructorDAO {
         return null;
     }
 
-    public void update(
-            Instructor instructor
-    ) {
+    public void update(Instructor instructor) {
 
         String sql = """
                 UPDATE Instructor
@@ -179,35 +140,15 @@ public class InstructorDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt =
-                        conn.prepareStatement(sql)
+                Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
-            pstmt.setString(
-                    1,
-                    instructor.getFirstName()
-            );
-
-            pstmt.setString(
-                    2,
-                    instructor.getMiddleName()
-            );
-
-            pstmt.setString(
-                    3,
-                    instructor.getLastName()
-            );
-
-            pstmt.setInt(
-                    4,
-                    instructor.getDepartmentId()
-            );
-
-            pstmt.setInt(
-                    5,
-                    instructor.getInstructorId()
-            );
+            pstmt.setString(1, instructor.getFirstName());
+            pstmt.setString(2, instructor.getMiddleName());
+            pstmt.setString(3, instructor.getLastName());
+            pstmt.setInt(4, instructor.getDepartmentId());
+            pstmt.setInt(5, instructor.getInstructorId());
 
             pstmt.executeUpdate();
 
@@ -216,9 +157,7 @@ public class InstructorDAO {
         }
     }
 
-    public void delete(
-            int instructorId
-    ) {
+    public void delete(int instructorId) {
 
         String sql = """
                 DELETE FROM Instructor
@@ -226,15 +165,11 @@ public class InstructorDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt =
-                        conn.prepareStatement(sql)
+                Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
-            pstmt.setInt(
-                    1,
-                    instructorId
-            );
+            pstmt.setInt(1, instructorId);
 
             pstmt.executeUpdate();
 
@@ -248,17 +183,17 @@ public class InstructorDAO {
         String sql = "SELECT COUNT(*) FROM Instructor";
 
         try (
-                Connection conn = DBConnection.connect();
+                Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql);
                 ResultSet rs = pstmt.executeQuery()
         ) {
 
-                if (rs.next()) {
+            if (rs.next()) {
                 return rs.getInt(1);
-                }
+            }
 
         } catch (Exception e) {
-                e.printStackTrace();
+            e.printStackTrace();
         }
 
         return 0;

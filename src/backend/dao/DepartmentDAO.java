@@ -1,26 +1,26 @@
 package backend.dao;
 
+
+import backend.models.Department;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import backend.db.DBConnection;
-import backend.models.Department;;
-
-public class DepartmentDAO {
-    public void create(Department department){
+public class DepartmentDAO extends BaseDAO {
+    public void create(Department department) {
         String sql = """
-            INSERT INTO Department (department_name)
-            VALUES (?)
-        """;
+                INSERT INTO Department (department_name)
+                VALUES (?)
+                """;
 
-        try (
-            Connection conn = DBConnection.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, department.getDepartmentName());
+
             pstmt.executeUpdate();
 
         } catch (Exception e) {
@@ -33,21 +33,15 @@ public class DepartmentDAO {
 
         String sql = "SELECT * FROM Department";
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-                ResultSet rs = pstmt.executeQuery()
-        ) {
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
             while (rs.next()) {
                 Department department = new Department();
 
-                department.setDepartmentId(
-                        rs.getInt("department_id")
-                );
-
-                department.setDepartmentName(
-                        rs.getString("department_name")
-                );
+                department.setDepartmentId(rs.getInt("department_id"));
+                department.setDepartmentName(rs.getString("department_name"));
 
                 departments.add(department);
             }
@@ -66,10 +60,8 @@ public class DepartmentDAO {
                 WHERE department_id = ?
                 """;
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, departmentId);
 
@@ -78,13 +70,8 @@ public class DepartmentDAO {
             if (rs.next()) {
                 Department department = new Department();
 
-                department.setDepartmentId(
-                        rs.getInt("department_id")
-                );
-
-                department.setDepartmentName(
-                        rs.getString("department_name")
-                );
+                department.setDepartmentId(rs.getInt("department_id"));
+                department.setDepartmentName(rs.getString("department_name"));
 
                 return department;
             }
@@ -103,20 +90,11 @@ public class DepartmentDAO {
                 WHERE department_id = ?
                 """;
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(
-                    1,
-                    department.getDepartmentName()
-            );
-
-            pstmt.setInt(
-                    2,
-                    department.getDepartmentId()
-            );
+            pstmt.setString(1, department.getDepartmentName());
+            pstmt.setInt(2, department.getDepartmentId());
 
             pstmt.executeUpdate();
 
@@ -131,10 +109,8 @@ public class DepartmentDAO {
                 WHERE department_id = ?
                 """;
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, departmentId);
 

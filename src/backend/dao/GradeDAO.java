@@ -1,6 +1,5 @@
 package backend.dao;
 
-import backend.db.DBConnection;
 import backend.models.Grade;
 
 import java.sql.Connection;
@@ -9,8 +8,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GradeDAO {
-
+public class GradeDAO extends BaseDAO {
     public void create(Grade grade) {
         String sql = """
                 INSERT INTO Grade (
@@ -21,25 +19,12 @@ public class GradeDAO {
                 VALUES (?, ?, ?)
                 """;
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setDouble(
-                    1,
-                    grade.getFinalGrade()
-            );
-
-            pstmt.setString(
-                    2,
-                    grade.getRemarks()
-            );
-
-            pstmt.setInt(
-                    3,
-                    grade.getEnrollmentId()
-            );
+            pstmt.setDouble(1, grade.getFinalGrade());
+            pstmt.setString(2, grade.getRemarks());
+            pstmt.setInt(3, grade.getEnrollmentId());
 
             pstmt.executeUpdate();
 
@@ -53,31 +38,17 @@ public class GradeDAO {
 
         String sql = "SELECT * FROM Grade";
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-                ResultSet rs = pstmt.executeQuery()
-        ) {
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-
                 Grade grade = new Grade();
 
-                grade.setGradeId(
-                        rs.getInt("grade_id")
-                );
-
-                grade.setFinalGrade(
-                        rs.getDouble("final_grade")
-                );
-
-                grade.setRemarks(
-                        rs.getString("remarks")
-                );
-
-                grade.setEnrollmentId(
-                        rs.getInt("enrollment_id")
-                );
+                grade.setGradeId(rs.getInt("grade_id"));
+                grade.setFinalGrade(rs.getDouble("final_grade"));
+                grade.setRemarks(rs.getString("remarks"));
+                grade.setEnrollmentId(rs.getInt("enrollment_id"));
 
                 grades.add(grade);
             }
@@ -90,41 +61,26 @@ public class GradeDAO {
     }
 
     public Grade getById(int gradeId) {
-
         String sql = """
                 SELECT *
                 FROM Grade
                 WHERE grade_id = ?
                 """;
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, gradeId);
 
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-
                 Grade grade = new Grade();
 
-                grade.setGradeId(
-                        rs.getInt("grade_id")
-                );
-
-                grade.setFinalGrade(
-                        rs.getDouble("final_grade")
-                );
-
-                grade.setRemarks(
-                        rs.getString("remarks")
-                );
-
-                grade.setEnrollmentId(
-                        rs.getInt("enrollment_id")
-                );
+                grade.setGradeId(rs.getInt("grade_id"));
+                grade.setFinalGrade(rs.getDouble("final_grade"));
+                grade.setRemarks(rs.getString("remarks"));
+                grade.setEnrollmentId(rs.getInt("enrollment_id"));
 
                 return grade;
             }
@@ -137,7 +93,6 @@ public class GradeDAO {
     }
 
     public void update(Grade grade) {
-
         String sql = """
                 UPDATE Grade
                 SET
@@ -147,30 +102,13 @@ public class GradeDAO {
                 WHERE grade_id = ?
                 """;
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setDouble(
-                    1,
-                    grade.getFinalGrade()
-            );
-
-            pstmt.setString(
-                    2,
-                    grade.getRemarks()
-            );
-
-            pstmt.setInt(
-                    3,
-                    grade.getEnrollmentId()
-            );
-
-            pstmt.setInt(
-                    4,
-                    grade.getGradeId()
-            );
+            pstmt.setDouble(1, grade.getFinalGrade());
+            pstmt.setString(2, grade.getRemarks());
+            pstmt.setInt(3, grade.getEnrollmentId());
+            pstmt.setInt(4, grade.getGradeId());
 
             pstmt.executeUpdate();
 
@@ -180,16 +118,13 @@ public class GradeDAO {
     }
 
     public void delete(int gradeId) {
-
         String sql = """
                 DELETE FROM Grade
                 WHERE grade_id = ?
                 """;
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, gradeId);
 

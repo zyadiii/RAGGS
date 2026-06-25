@@ -1,13 +1,10 @@
 package backend.dao;
 
-import backend.db.DBConnection;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class ProgramCourseDAO {
-
+public class ProgramCourseDAO extends BaseDAO {
     public void assignCourse(
             int programId,
             int courseId
@@ -22,9 +19,8 @@ public class ProgramCourseDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt =
-                        conn.prepareStatement(sql)
+                Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
             pstmt.setInt(1, programId);
@@ -49,9 +45,8 @@ public class ProgramCourseDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt =
-                        conn.prepareStatement(sql)
+                Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
             pstmt.setInt(1, programId);
@@ -72,20 +67,18 @@ public class ProgramCourseDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt =
-                        conn.prepareStatement(sql);
-                ResultSet rs =
-                        pstmt.executeQuery()
+                Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                ResultSet rs = pstmt.executeQuery()
         ) {
 
             while (rs.next()) {
 
                 System.out.println(
-                        "Program ID: " +
-                        rs.getInt("program_id") +
-                        " | Course ID: " +
-                        rs.getInt("course_id")
+                        "Program ID: "
+                                + rs.getInt("program_id")
+                                + " | Course ID: "
+                                + rs.getInt("course_id")
                 );
             }
 

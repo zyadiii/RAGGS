@@ -1,6 +1,5 @@
 package backend.dao;
 
-import backend.db.DBConnection;
 import backend.models.Program;
 
 import java.sql.Connection;
@@ -9,8 +8,9 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProgramDAO {
-  public void create(Program program) {
+public class ProgramDAO extends BaseDAO {
+    public void create(Program program) {
+
         String sql = """
                 INSERT INTO Program (
                     program_name,
@@ -20,19 +20,12 @@ public class ProgramDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
+                Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
-            pstmt.setString(
-                    1,
-                    program.getProgramName()
-            );
-
-            pstmt.setInt(
-                    2,
-                    program.getDepartmentId()
-            );
+            pstmt.setString(1, program.getProgramName());
+            pstmt.setInt(2, program.getDepartmentId());
 
             pstmt.executeUpdate();
 
@@ -42,12 +35,13 @@ public class ProgramDAO {
     }
 
     public List<Program> getAll() {
+
         List<Program> programs = new ArrayList<>();
 
         String sql = "SELECT * FROM Program";
 
         try (
-                Connection conn = DBConnection.connect();
+                Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql);
                 ResultSet rs = pstmt.executeQuery()
         ) {
@@ -56,17 +50,9 @@ public class ProgramDAO {
 
                 Program program = new Program();
 
-                program.setProgramId(
-                        rs.getInt("program_id")
-                );
-
-                program.setProgramName(
-                        rs.getString("program_name")
-                );
-
-                program.setDepartmentId(
-                        rs.getInt("department_id")
-                );
+                program.setProgramId(rs.getInt("program_id"));
+                program.setProgramName(rs.getString("program_name"));
+                program.setDepartmentId(rs.getInt("department_id"));
 
                 programs.add(program);
             }
@@ -79,6 +65,7 @@ public class ProgramDAO {
     }
 
     public Program getById(int programId) {
+
         String sql = """
                 SELECT *
                 FROM Program
@@ -86,7 +73,7 @@ public class ProgramDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
+                Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
@@ -98,17 +85,9 @@ public class ProgramDAO {
 
                 Program program = new Program();
 
-                program.setProgramId(
-                        rs.getInt("program_id")
-                );
-
-                program.setProgramName(
-                        rs.getString("program_name")
-                );
-
-                program.setDepartmentId(
-                        rs.getInt("department_id")
-                );
+                program.setProgramId(rs.getInt("program_id"));
+                program.setProgramName(rs.getString("program_name"));
+                program.setDepartmentId(rs.getInt("department_id"));
 
                 return program;
             }
@@ -121,6 +100,7 @@ public class ProgramDAO {
     }
 
     public void update(Program program) {
+
         String sql = """
                 UPDATE Program
                 SET
@@ -130,24 +110,13 @@ public class ProgramDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
+                Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
-            pstmt.setString(
-                    1,
-                    program.getProgramName()
-            );
-
-            pstmt.setInt(
-                    2,
-                    program.getDepartmentId()
-            );
-
-            pstmt.setInt(
-                    3,
-                    program.getProgramId()
-            );
+            pstmt.setString(1, program.getProgramName());
+            pstmt.setInt(2, program.getDepartmentId());
+            pstmt.setInt(3, program.getProgramId());
 
             pstmt.executeUpdate();
 
@@ -164,15 +133,37 @@ public class ProgramDAO {
                 """;
 
         try (
-                Connection conn = DBConnection.connect();
+                Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
             pstmt.setInt(1, programId);
+
             pstmt.executeUpdate();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public int count() {
+
+        String sql = "SELECT COUNT(*) FROM Program";
+
+        try (
+                Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                ResultSet rs = pstmt.executeQuery()
+        ) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 }

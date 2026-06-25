@@ -1,6 +1,5 @@
 package backend.dao;
 
-import backend.db.DBConnection;
 import backend.models.Course;
 
 import java.sql.Connection;
@@ -9,8 +8,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CourseDAO {
-
+public class CourseDAO extends BaseDAO {
     public void create(Course course) {
         String sql = """
                 INSERT INTO Course (
@@ -21,25 +19,12 @@ public class CourseDAO {
                 VALUES (?, ?, ?)
                 """;
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(
-                    1,
-                    course.getCourseCode()
-            );
-
-            pstmt.setString(
-                    2,
-                    course.getCourseName()
-            );
-
-            pstmt.setInt(
-                    3,
-                    course.getUnits()
-            );
+            pstmt.setString(1, course.getCourseCode());
+            pstmt.setString(2, course.getCourseName());
+            pstmt.setInt(3, course.getUnits());
 
             pstmt.executeUpdate();
 
@@ -53,31 +38,17 @@ public class CourseDAO {
 
         String sql = "SELECT * FROM Course";
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-                ResultSet rs = pstmt.executeQuery()
-        ) {
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-
                 Course course = new Course();
 
-                course.setCourseId(
-                        rs.getInt("course_id")
-                );
-
-                course.setCourseCode(
-                        rs.getString("course_code")
-                );
-
-                course.setCourseName(
-                        rs.getString("course_name")
-                );
-
-                course.setUnits(
-                        rs.getInt("units")
-                );
+                course.setCourseId(rs.getInt("course_id"));
+                course.setCourseCode(rs.getString("course_code"));
+                course.setCourseName(rs.getString("course_name"));
+                course.setUnits(rs.getInt("units"));
 
                 courses.add(course);
             }
@@ -90,41 +61,26 @@ public class CourseDAO {
     }
 
     public Course getById(int courseId) {
-
         String sql = """
                 SELECT *
                 FROM Course
                 WHERE course_id = ?
                 """;
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, courseId);
 
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-
                 Course course = new Course();
 
-                course.setCourseId(
-                        rs.getInt("course_id")
-                );
-
-                course.setCourseCode(
-                        rs.getString("course_code")
-                );
-
-                course.setCourseName(
-                        rs.getString("course_name")
-                );
-
-                course.setUnits(
-                        rs.getInt("units")
-                );
+                course.setCourseId(rs.getInt("course_id"));
+                course.setCourseCode(rs.getString("course_code"));
+                course.setCourseName(rs.getString("course_name"));
+                course.setUnits(rs.getInt("units"));
 
                 return course;
             }
@@ -137,7 +93,6 @@ public class CourseDAO {
     }
 
     public void update(Course course) {
-
         String sql = """
                 UPDATE Course
                 SET
@@ -147,30 +102,13 @@ public class CourseDAO {
                 WHERE course_id = ?
                 """;
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(
-                    1,
-                    course.getCourseCode()
-            );
-
-            pstmt.setString(
-                    2,
-                    course.getCourseName()
-            );
-
-            pstmt.setInt(
-                    3,
-                    course.getUnits()
-            );
-
-            pstmt.setInt(
-                    4,
-                    course.getCourseId()
-            );
+            pstmt.setString(1, course.getCourseCode());
+            pstmt.setString(2, course.getCourseName());
+            pstmt.setInt(3, course.getUnits());
+            pstmt.setInt(4, course.getCourseId());
 
             pstmt.executeUpdate();
 
@@ -180,16 +118,13 @@ public class CourseDAO {
     }
 
     public void delete(int courseId) {
-
         String sql = """
                 DELETE FROM Course
                 WHERE course_id = ?
                 """;
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, courseId);
 
@@ -201,23 +136,20 @@ public class CourseDAO {
     }
 
     public int count() {
-
         String sql = "SELECT COUNT(*) FROM Course";
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-                ResultSet rs = pstmt.executeQuery()
-        ) {
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
 
-                if (rs.next()) {
+            if (rs.next()) {
                 return rs.getInt(1);
-                }
+            }
 
         } catch (Exception e) {
-                e.printStackTrace();
+            e.printStackTrace();
         }
 
         return 0;
-        }
+    }
 }
