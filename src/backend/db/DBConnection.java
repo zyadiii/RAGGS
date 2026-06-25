@@ -9,6 +9,7 @@ public class DBConnection {
         "jdbc:sqlite:student.db";
 
     public static Connection connect() throws Exception {
+        Class.forName("org.sqlite.JDBC");
         return DriverManager.getConnection(URL);
     }
 }
