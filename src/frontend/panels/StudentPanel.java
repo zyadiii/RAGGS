@@ -13,10 +13,6 @@ public class StudentPanel extends JPanel {
     private JTextField searchField;
 
     private JButton searchButton;
-    private JButton addButton;
-    private JButton editButton;
-    private JButton deleteButton;
-    private JButton refreshButton;
 
     private JTable studentTable;
     private DefaultTableModel tableModel;
@@ -58,25 +54,15 @@ public class StudentPanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(studentTable);
         add(scrollPane, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-
-        addButton = new JButton("Add");
-        editButton = new JButton("Edit");
-        deleteButton = new JButton("Delete");
-        refreshButton = new JButton("Refresh");
-
-        buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(refreshButton);
+        CRUDButtonPanel buttonPanel = new CRUDButtonPanel();
 
         add(buttonPanel, BorderLayout.SOUTH);
 
         searchButton.addActionListener(e -> searchStudents());
-        refreshButton.addActionListener(e -> loadStudents());
-        addButton.addActionListener(e -> addStudent());
-        editButton.addActionListener(e -> editStudent());
-        deleteButton.addActionListener(e -> deleteStudent());
+        buttonPanel.getRefreshButton().addActionListener(e -> loadStudents());
+        buttonPanel.getAddButton().addActionListener(e -> addStudent());
+        buttonPanel.getEditButton().addActionListener(e -> editStudent());
+        buttonPanel.getDeleteButton().addActionListener(e -> deleteStudent());
 
         loadStudents();
     }
@@ -198,6 +184,7 @@ public class StudentPanel extends JPanel {
         );
 
         statusCombo.setSelectedItem(student.getStatus());
+        genderCombo.setSelectedItem(student.getGender());
 
         JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
 
