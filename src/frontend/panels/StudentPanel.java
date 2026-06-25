@@ -442,17 +442,49 @@ public class StudentPanel extends JPanel {
 
     private void searchStudents() {
 
-        String keyword = searchField.getText().trim();
+        String input = searchField.getText().trim();
 
-        if (keyword.isEmpty()) {
-
+        if (input.isEmpty()) {
             loadStudents();
             return;
         }
 
-        JOptionPane.showMessageDialog(
-                this,
-                "Search not implemented yet.\nKeyword: " + keyword
-        );
+        try {
+
+            int studentId = Integer.parseInt(input);
+
+            StudentDAO studentDAO = new StudentDAO();
+
+            Student student = studentDAO.getById(studentId);
+
+            tableModel.setRowCount(0);
+
+            if (student != null) {
+
+                tableModel.addRow(new Object[]{
+                        student.getStudentId(),
+                        student.getFirstName(),
+                        student.getMiddleName(),
+                        student.getLastName(),
+                        student.getBlockId(),
+                        student.getStatus(),
+                        student.getContactNo()
+                });
+
+            } else {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Student not found."
+                );
+            }
+
+        } catch (NumberFormatException e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please enter a valid Student ID."
+            );
+        }
     }
 }
