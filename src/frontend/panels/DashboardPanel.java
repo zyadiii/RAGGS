@@ -1,13 +1,12 @@
 package frontend.panels;
 
 import javax.swing.*;
+import java.awt.*;
 
 import backend.dao.CourseDAO;
 import backend.dao.EnrollmentDAO;
 import backend.dao.InstructorDAO;
 import backend.dao.StudentDAO;
-
-import java.awt.*;
 
 public class DashboardPanel extends JPanel {
 
@@ -18,17 +17,32 @@ public class DashboardPanel extends JPanel {
 
     public DashboardPanel() {
 
-        setLayout(new GridLayout(2, 2, 20, 20));
+        setLayout(new BorderLayout());
 
         studentCountLabel = createCard("Students", "0");
         courseCountLabel = createCard("Courses", "0");
         enrollmentCountLabel = createCard("Enrollments", "0");
         instructorCountLabel = createCard("Instructors", "0");
 
-        add(studentCountLabel);
-        add(courseCountLabel);
-        add(enrollmentCountLabel);
-        add(instructorCountLabel);
+        JPanel cardPanel = new JPanel(
+                new GridLayout(2, 2, 20, 20)
+        );
+
+        cardPanel.add(studentCountLabel);
+        cardPanel.add(courseCountLabel);
+        cardPanel.add(enrollmentCountLabel);
+        cardPanel.add(instructorCountLabel);
+
+        add(cardPanel, BorderLayout.CENTER);
+
+        JButton refreshButton = new JButton("Refresh");
+
+        refreshButton.addActionListener(
+                e -> loadCounts()
+        );
+
+        add(refreshButton, BorderLayout.SOUTH);
+
         loadCounts();
     }
 
@@ -50,7 +64,6 @@ public class DashboardPanel extends JPanel {
     }
 
     private void loadCounts() {
-
         StudentDAO studentDAO = new StudentDAO();
         CourseDAO courseDAO = new CourseDAO();
         EnrollmentDAO enrollmentDAO = new EnrollmentDAO();
@@ -63,7 +76,7 @@ public class DashboardPanel extends JPanel {
                 instructorDAO.count()
         );
     }
-    
+
     public void updateCounts(
         int students,
         int courses,
