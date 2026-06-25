@@ -69,19 +69,6 @@ public class DBInitializer {
                 )
             """);
 
-            // Instructor
-            stmt.execute("""
-                CREATE TABLE IF NOT EXISTS Instructor (
-                    instructor_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    first_name TEXT NOT NULL,
-                    middle_name TEXT,
-                    last_name TEXT NOT NULL,
-                    department_id INTEGER,
-                    FOREIGN KEY (department_id)
-                        REFERENCES Department(department_id)
-                )
-            """);
-
             // ProgramCourse 
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS ProgramCourse (
@@ -90,19 +77,6 @@ public class DBInitializer {
                     PRIMARY KEY (program_id, course_id),
                     FOREIGN KEY (program_id)
                         REFERENCES Program(program_id),
-                    FOREIGN KEY (course_id)
-                        REFERENCES Course(course_id)
-                )
-            """);
-
-            // InstructorCourse 
-            stmt.execute("""
-                CREATE TABLE IF NOT EXISTS InstructorCourse (
-                    instructor_id INTEGER NOT NULL,
-                    course_id INTEGER NOT NULL,
-                    PRIMARY KEY (instructor_id, course_id),
-                    FOREIGN KEY (instructor_id)
-                        REFERENCES Instructor(instructor_id),
                     FOREIGN KEY (course_id)
                         REFERENCES Course(course_id)
                 )
