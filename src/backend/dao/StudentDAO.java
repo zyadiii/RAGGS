@@ -208,4 +208,22 @@ public class StudentDAO extends BaseDAO {
 
         return 0;
     }
+
+    public int countActive() {
+        String sql = "SELECT COUNT(*) FROM Student WHERE status = 'Active'";
+
+        try (Connection conn = getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
 }
