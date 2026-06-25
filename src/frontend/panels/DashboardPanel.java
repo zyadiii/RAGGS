@@ -1,6 +1,12 @@
 package frontend.panels;
 
 import javax.swing.*;
+
+import backend.dao.CourseDAO;
+import backend.dao.EnrollmentDAO;
+import backend.dao.InstructorDAO;
+import backend.dao.StudentDAO;
+
 import java.awt.*;
 
 public class DashboardPanel extends JPanel {
@@ -8,7 +14,7 @@ public class DashboardPanel extends JPanel {
     private JLabel studentCountLabel;
     private JLabel courseCountLabel;
     private JLabel enrollmentCountLabel;
-    private JLabel gradeCountLabel;
+    private JLabel instructorCountLabel;
 
     public DashboardPanel() {
 
@@ -17,12 +23,13 @@ public class DashboardPanel extends JPanel {
         studentCountLabel = createCard("Students", "0");
         courseCountLabel = createCard("Courses", "0");
         enrollmentCountLabel = createCard("Enrollments", "0");
-        gradeCountLabel = createCard("Grades", "0");
+        instructorCountLabel = createCard("Instructors", "0");
 
         add(studentCountLabel);
         add(courseCountLabel);
         add(enrollmentCountLabel);
-        add(gradeCountLabel);
+        add(instructorCountLabel);
+        loadCounts();
     }
 
     private JLabel createCard(String title, String value) {
@@ -42,13 +49,43 @@ public class DashboardPanel extends JPanel {
         return label;
     }
 
-    // later you will use this with DAO
-    public void updateCounts(int students, int courses, int enrollments, int grades) {
+    private void loadCounts() {
 
-        studentCountLabel.setText(html("Students", students));
-        courseCountLabel.setText(html("Courses", courses));
-        enrollmentCountLabel.setText(html("Enrollments", enrollments));
-        gradeCountLabel.setText(html("Grades", grades));
+        StudentDAO studentDAO = new StudentDAO();
+        CourseDAO courseDAO = new CourseDAO();
+        EnrollmentDAO enrollmentDAO = new EnrollmentDAO();
+        InstructorDAO instructorDAO = new InstructorDAO();
+
+        updateCounts(
+                studentDAO.count(),
+                courseDAO.count(),
+                enrollmentDAO.count(),
+                instructorDAO.count()
+        );
+    }
+    
+    public void updateCounts(
+        int students,
+        int courses,
+        int enrollments,
+        int instructors
+    ) {
+
+        studentCountLabel.setText(
+                html("Students", students)
+        );
+
+        courseCountLabel.setText(
+                html("Courses", courses)
+        );
+
+        enrollmentCountLabel.setText(
+                html("Enrollments", enrollments)
+        );
+
+        instructorCountLabel.setText(
+                html("Instructors", instructors)
+        );
     }
 
     private String html(String title, int value) {

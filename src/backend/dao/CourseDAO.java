@@ -199,4 +199,25 @@ public class CourseDAO {
             e.printStackTrace();
         }
     }
+
+    public int count() {
+
+        String sql = "SELECT COUNT(*) FROM Course";
+
+        try (
+                Connection conn = DBConnection.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                ResultSet rs = pstmt.executeQuery()
+        ) {
+
+                if (rs.next()) {
+                return rs.getInt(1);
+                }
+
+        } catch (Exception e) {
+                e.printStackTrace();
+        }
+
+        return 0;
+        }
 }
