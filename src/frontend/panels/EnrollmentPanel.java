@@ -48,8 +48,8 @@ public class EnrollmentPanel extends JPanel {
                 "Enrollment Date",
                 "School Year",
                 "Semester",
-                "Student ID",
-                "Course ID"
+                "Student",
+                "Course"
         };
 
         tableModel = new DefaultTableModel(columns, 0) {
@@ -423,16 +423,34 @@ public class EnrollmentPanel extends JPanel {
     }
 
     private void loadEnrollments() {
-
         tableModel.setRowCount(0);
 
-        EnrollmentDAO dao =
-                new EnrollmentDAO();
+        EnrollmentDAO enrollmentDAO = new EnrollmentDAO();
 
-        List<Enrollment> enrollments =
-                dao.getAll();
+        StudentDAO studentDAO = new StudentDAO();
+
+        CourseDAO courseDAO = new CourseDAO();
+
+        List<Enrollment> enrollments = enrollmentDAO.getAll();
 
         for (Enrollment enrollment : enrollments) {
+            Student student = studentDAO.getById(
+                enrollment.getStudentId()
+            );
+
+            Course course = courseDAO.getById(enrollment.getCourseId());
+
+            String studentName = "";
+            String courseCode = "";
+
+            if (student != null) {
+                studentName = student.getFirstName()
+                            + " " + student.getLastName();
+            }
+
+            if (course != null) {
+                courseCode = course.getCourseCode();
+            }
 
             tableModel.addRow(
                     new Object[]{
@@ -440,8 +458,8 @@ public class EnrollmentPanel extends JPanel {
                             enrollment.getEnrollmentDate(),
                             enrollment.getSchoolYear(),
                             enrollment.getSemester(),
-                            enrollment.getStudentId(),
-                            enrollment.getCourseId()
+                            studentName,
+                            courseCode
                     }
             );
         }
@@ -473,15 +491,38 @@ public class EnrollmentPanel extends JPanel {
 
             if (enrollment != null) {
 
+                StudentDAO studentDAO = new StudentDAO();
+
+                CourseDAO courseDAO = new CourseDAO();
+
+                Student student = studentDAO.getById(enrollment.getStudentId());
+
+                Course course = courseDAO.getById(enrollment.getCourseId());
+
+                String studentName = "";
+                String courseCode = "";
+
+                if (student != null) {
+                    studentName =
+                            student.getFirstName()
+                            + " "
+                            + student.getLastName();
+                }
+
+                if (course != null) {
+                    courseCode =
+                            course.getCourseCode();
+                }
+
                 tableModel.addRow(
-                        new Object[]{
-                                enrollment.getEnrollmentId(),
-                                enrollment.getEnrollmentDate(),
-                                enrollment.getSchoolYear(),
-                                enrollment.getSemester(),
-                                enrollment.getStudentId(),
-                                enrollment.getCourseId()
-                        }
+                    new Object[]{
+                        enrollment.getEnrollmentId(),
+                        enrollment.getEnrollmentDate(),
+                        enrollment.getSchoolYear(),
+                        enrollment.getSemester(),
+                        studentName,
+                        courseCode
+                    }
                 );
 
             } else {
