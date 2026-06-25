@@ -1,100 +1,440 @@
 package frontend.panels;
 
+import backend.dao.CourseDAO;
+import backend.models.Course;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.List;
 
 public class CoursePanel extends JPanel {
 
-    private JTextField courseCodeField;
-    private JTextField courseNameField;
-    private JTextField unitsField;
+private JTextField searchField;
 
-    private JButton addButton;
-    private JButton clearButton;
+private JButton searchButton;
+private JButton addButton;
+private JButton editButton;
+private JButton deleteButton;
+private JButton refreshButton;
 
-    public CoursePanel() {
+private JTable courseTable;
+private DefaultTableModel tableModel;
 
-        setLayout(new BorderLayout(10, 10));
+public CoursePanel() {
 
-        // ================= FORM PANEL =================
-        JPanel formPanel = new JPanel();
-        formPanel.setLayout(new GridLayout(4, 2, 10, 10));
+    setLayout(new BorderLayout(10, 10));
 
-        formPanel.add(new JLabel("Course Code:"));
-        courseCodeField = new JTextField();
-        formPanel.add(courseCodeField);
+    // ================= SEARCH PANEL =================
+    JPanel topPanel = new JPanel(
+            new BorderLayout(10, 10)
+    );
 
-        formPanel.add(new JLabel("Course Name:"));
-        courseNameField = new JTextField();
-        formPanel.add(courseNameField);
+    searchField = new JTextField();
+    searchButton = new JButton("Search");
 
-        formPanel.add(new JLabel("Units:"));
-        unitsField = new JTextField();
-        formPanel.add(unitsField);
+    topPanel.add(searchField, BorderLayout.CENTER);
+    topPanel.add(searchButton, BorderLayout.EAST);
 
-        addButton = new JButton("Add Course");
-        clearButton = new JButton("Clear");
+    add(topPanel, BorderLayout.NORTH);
 
-        formPanel.add(addButton);
-        formPanel.add(clearButton);
+    // ================= TABLE =================
+    String[] columns = {
+            "ID",
+            "Course Code",
+            "Course Name",
+            "Units"
+    };
 
-        add(formPanel, BorderLayout.NORTH);
+    tableModel = new DefaultTableModel(
+            columns,
+            0
+    ) {
+        @Override
+        public boolean isCellEditable(
+                int row,
+                int column
+        ) {
+            return false;
+        }
+    };
 
-        // ================= PLACEHOLDER TABLE =================
-        JTable table = new JTable();
-        JScrollPane scrollPane = new JScrollPane(table);
+    courseTable = new JTable(tableModel);
 
-        add(scrollPane, BorderLayout.CENTER);
+    courseTable.setSelectionMode(
+            ListSelectionModel.SINGLE_SELECTION
+    );
 
-        // ================= BUTTON ACTIONS =================
-        addButton.addActionListener(e -> addCourse());
-        clearButton.addActionListener(e -> clearFields());
+    JScrollPane scrollPane =
+            new JScrollPane(courseTable);
+
+    add(scrollPane, BorderLayout.CENTER);
+
+    // ================= BUTTON PANEL =================
+    JPanel buttonPanel = new JPanel(
+            new FlowLayout(
+                    FlowLayout.RIGHT
+            )
+    );
+
+    addButton = new JButton("Add");
+    editButton = new JButton("Edit");
+    deleteButton = new JButton("Delete");
+    refreshButton = new JButton("Refresh");
+
+    buttonPanel.add(addButton);
+    buttonPanel.add(editButton);
+    buttonPanel.add(deleteButton);
+    buttonPanel.add(refreshButton);
+
+    add(buttonPanel, BorderLayout.SOUTH);
+
+    // ================= ACTIONS =================
+    searchButton.addActionListener(
+            e -> searchCourses()
+    );
+
+    refreshButton.addActionListener(
+            e -> loadCourses()
+    );
+
+    addButton.addActionListener(
+            e -> addCourse()
+    );
+
+    editButton.addActionListener(
+            e -> editCourse()
+    );
+
+    deleteButton.addActionListener(
+            e -> deleteCourse()
+    );
+
+    loadCourses();
+}
+
+private void addCourse() {
+
+    JTextField codeField =
+            new JTextField();
+
+    JTextField nameField =
+            new JTextField();
+
+    JTextField unitsField =
+            new JTextField();
+
+    JPanel panel = new JPanel(
+            new GridLayout(0, 2, 5, 5)
+    );
+
+    panel.add(new JLabel("Course Code:"));
+    panel.add(codeField);
+
+    panel.add(new JLabel("Course Name:"));
+    panel.add(nameField);
+
+    panel.add(new JLabel("Units:"));
+    panel.add(unitsField);
+
+    int result =
+            JOptionPane.showConfirmDialog(
+                    this,
+                    panel,
+                    "Add Course",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.PLAIN_MESSAGE
+            );
+
+    if (result != JOptionPane.OK_OPTION) {
+        return;
     }
 
-    private void addCourse() {
+    try {
 
-        String code = courseCodeField.getText().trim();
-        String name = courseNameField.getText().trim();
-        String unitsText = unitsField.getText().trim();
+        Course course = new Course();
 
-        if (code.isEmpty() || name.isEmpty() || unitsText.isEmpty()) {
+        course.setCourseCode(
+                codeField.getText().trim()
+        );
+
+        course.setCourseName(
+                nameField.getText().trim()
+        );
+
+        course.setUnits(
+                Integer.parseInt(
+                        unitsField.getText().trim()
+                )
+        );
+
+        CourseDAO dao = new CourseDAO();
+
+        dao.create(course);
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Course added successfully."
+        );
+
+        loadCourses();
+
+    } catch (Exception ex) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Failed to add course.\n"
+                        + ex.getMessage()
+        );
+    }
+}
+
+private void editCourse() {
+
+    int row =
+            courseTable.getSelectedRow();
+
+    if (row == -1) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Please select a course."
+        );
+
+        return;
+    }
+
+    int courseId =
+            (int) tableModel.getValueAt(
+                    row,
+                    0
+            );
+
+    CourseDAO dao =
+            new CourseDAO();
+
+    Course course =
+            dao.getById(courseId);
+
+    if (course == null) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Course not found."
+        );
+
+        return;
+    }
+
+    JTextField codeField =
+            new JTextField(
+                    course.getCourseCode()
+            );
+
+    JTextField nameField =
+            new JTextField(
+                    course.getCourseName()
+            );
+
+    JTextField unitsField =
+            new JTextField(
+                    String.valueOf(
+                            course.getUnits()
+                    )
+            );
+
+    JPanel panel = new JPanel(
+            new GridLayout(0, 2, 5, 5)
+    );
+
+    panel.add(new JLabel("Course Code:"));
+    panel.add(codeField);
+
+    panel.add(new JLabel("Course Name:"));
+    panel.add(nameField);
+
+    panel.add(new JLabel("Units:"));
+    panel.add(unitsField);
+
+    int result =
+            JOptionPane.showConfirmDialog(
+                    this,
+                    panel,
+                    "Edit Course",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.PLAIN_MESSAGE
+            );
+
+    if (result != JOptionPane.OK_OPTION) {
+        return;
+    }
+
+    try {
+
+        course.setCourseCode(
+                codeField.getText().trim()
+        );
+
+        course.setCourseName(
+                nameField.getText().trim()
+        );
+
+        course.setUnits(
+                Integer.parseInt(
+                        unitsField.getText().trim()
+                )
+        );
+
+        dao.update(course);
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Course updated successfully."
+        );
+
+        loadCourses();
+
+    } catch (Exception ex) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Failed to update course.\n"
+                        + ex.getMessage()
+        );
+    }
+}
+
+private void deleteCourse() {
+
+    int row =
+            courseTable.getSelectedRow();
+
+    if (row == -1) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Please select a course."
+        );
+
+        return;
+    }
+
+    int courseId =
+            (int) tableModel.getValueAt(
+                    row,
+                    0
+            );
+
+    int choice =
+            JOptionPane.showConfirmDialog(
+                    this,
+                    "Delete selected course?",
+                    "Confirm Delete",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+    if (choice != JOptionPane.YES_OPTION) {
+        return;
+    }
+
+    try {
+
+        CourseDAO dao =
+                new CourseDAO();
+
+        dao.delete(courseId);
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Course deleted successfully."
+        );
+
+        loadCourses();
+
+    } catch (Exception ex) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Failed to delete course.\n"
+                        + ex.getMessage()
+        );
+    }
+}
+
+private void loadCourses() {
+
+    tableModel.setRowCount(0);
+
+    CourseDAO dao =
+            new CourseDAO();
+
+    List<Course> courses =
+            dao.getAll();
+
+    for (Course course : courses) {
+
+        tableModel.addRow(
+                new Object[]{
+                        course.getCourseId(),
+                        course.getCourseCode(),
+                        course.getCourseName(),
+                        course.getUnits()
+                }
+        );
+    }
+}
+
+private void searchCourses() {
+
+    String input =
+            searchField.getText().trim();
+
+    if (input.isEmpty()) {
+
+        loadCourses();
+        return;
+    }
+
+    try {
+
+        int courseId =
+                Integer.parseInt(input);
+
+        CourseDAO dao =
+                new CourseDAO();
+
+        Course course =
+                dao.getById(courseId);
+
+        tableModel.setRowCount(0);
+
+        if (course != null) {
+
+            tableModel.addRow(
+                    new Object[]{
+                            course.getCourseId(),
+                            course.getCourseCode(),
+                            course.getCourseName(),
+                            course.getUnits()
+                    }
+            );
+
+        } else {
+
             JOptionPane.showMessageDialog(
                     this,
-                    "Please fill all fields",
-                    "Validation Error",
-                    JOptionPane.WARNING_MESSAGE
+                    "Course not found."
             );
-            return;
         }
 
-        try {
-            int units = Integer.parseInt(unitsText);
+    } catch (NumberFormatException e) {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Course Added (placeholder only)\n" +
-                            code + " - " + name + " (" + units + ")",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-
-            clearFields();
-
-        } catch (NumberFormatException e) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Units must be a number",
-                    "Input Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        }
+        JOptionPane.showMessageDialog(
+                this,
+                "Please enter a valid Course ID."
+        );
     }
+}
 
-    private void clearFields() {
 
-        courseCodeField.setText("");
-        courseNameField.setText("");
-        unitsField.setText("");
-    }
 }

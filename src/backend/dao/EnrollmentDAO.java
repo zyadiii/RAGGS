@@ -38,7 +38,7 @@ public class EnrollmentDAO {
                     enrollment.getSchoolYear()
             );
 
-            pstmt.setInt(
+            pstmt.setString(
                     3,
                     enrollment.getSemester()
             );
@@ -88,7 +88,7 @@ public class EnrollmentDAO {
                 );
 
                 enrollment.setSemester(
-                        rs.getInt("semester")
+                        rs.getString("semester")
                 );
 
                 enrollment.setStudentId(
@@ -143,7 +143,7 @@ public class EnrollmentDAO {
                 );
 
                 enrollment.setSemester(
-                        rs.getInt("semester")
+                        rs.getString("semester")
                 );
 
                 enrollment.setStudentId(
@@ -192,7 +192,7 @@ public class EnrollmentDAO {
                     enrollment.getSchoolYear()
             );
 
-            pstmt.setInt(
+            pstmt.setString(
                     3,
                     enrollment.getSemester()
             );

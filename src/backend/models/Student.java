@@ -117,4 +117,11 @@ public class Student {
     public void setBlockId(int blockId) {
         this.blockId = blockId;
     }
+
+    @Override
+    public String toString() {
+        return studentId + " - " +
+            firstName + " " +
+            lastName;
+    }
 }

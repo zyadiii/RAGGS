@@ -4,7 +4,7 @@ public class Enrollment {
     private int enrollmentId;
     private String enrollmentDate;
     private String schoolYear;
-    private int semester;
+    private String semester;
     private int studentId;
     private int courseId;
 
@@ -14,7 +14,7 @@ public class Enrollment {
             int enrollmentId,
             String enrollmentDate,
             String schoolYear,
-            int semester,
+            String semester,
             int studentId,
             int courseId
     ) {
@@ -50,11 +50,11 @@ public class Enrollment {
         this.schoolYear = schoolYear;
     }
 
-    public int getSemester() {
+    public String getSemester() {
         return semester;
     }
 
-    public void setSemester(int semester) {
+    public void setSemester(String semester) {
         this.semester = semester;
     }
 
