@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 
 import frontend.panels.*;
+import frontend.utilities.ComponentUtil;
+import frontend.utilities.Theme;
 
 public class MainWindow extends JFrame {
 
@@ -18,8 +20,8 @@ public class MainWindow extends JFrame {
 
     public MainWindow() {
 
-        setTitle("Student Information System");
-        setSize(900, 600);
+        setTitle("Student Record Management System");
+        setSize(1280, 720);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -27,13 +29,16 @@ public class MainWindow extends JFrame {
         // -------------- SIDEBAR ----------------
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new GridLayout(6, 1, 10, 10));
+        sidebar.setBackground(Theme.SIDEBAR);
 
-        JButton dashboardBtn = new JButton("Dashboard");
-        JButton studentBtn = new JButton("Students");
-        JButton courseBtn = new JButton("Courses");
-        JButton enrollmentBtn = new JButton("Enrollment");
-        JButton gradeBtn = new JButton("Grades");
-        JButton logoutBtn = new JButton("Logout");
+        Color sidebarColor = Theme.SIDEBAR;
+
+        JButton dashboardBtn = ComponentUtil.sidebarButton("Dashboard", sidebarColor);
+        JButton studentBtn = ComponentUtil.sidebarButton("Students", sidebarColor);
+        JButton courseBtn = ComponentUtil.sidebarButton("Courses", sidebarColor);
+        JButton enrollmentBtn = ComponentUtil.sidebarButton("Enrollment", sidebarColor);
+        JButton gradeBtn = ComponentUtil.sidebarButton("Grades", sidebarColor);
+        JButton logoutBtn = ComponentUtil.logoutButton("Logout");
 
         sidebar.add(dashboardBtn);
         sidebar.add(studentBtn);
@@ -41,7 +46,7 @@ public class MainWindow extends JFrame {
         sidebar.add(enrollmentBtn);
         sidebar.add(gradeBtn);
         sidebar.add(logoutBtn);
-
+        
         add(sidebar, BorderLayout.WEST);
 
         // -------------- MAIN AREA --------------

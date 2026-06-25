@@ -31,6 +31,12 @@ public class Theme {
 
     public static final Color BORDER =
             Color.decode("#000000");
+    
+    public static final Color SIDEBAR =
+        Color.decode("#354c64");
+
+    public static final Color SIDEBAR_TEXT = 
+        Color.decode("#e9e9e9");
 
     // ----- FONTS -----
 
