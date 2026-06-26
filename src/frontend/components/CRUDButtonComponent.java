@@ -1,4 +1,4 @@
-package frontend.panels;
+package frontend.components;
 
 import java.awt.*;
 
@@ -8,14 +8,14 @@ import javax.swing.JPanel;
 
 import frontend.utilities.Theme;
 
-public class CRUDButtonPanel extends JPanel{
+public class CRUDButtonComponent extends JPanel{
     
     private final JButton addButton;
     private final JButton editButton;
     private final JButton deleteButton;
     private final JButton refreshButton;
 
-    public CRUDButtonPanel() {
+    public CRUDButtonComponent() {
 
         setLayout(new BorderLayout(20, 0));
         setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));

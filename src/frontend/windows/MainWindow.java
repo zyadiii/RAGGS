@@ -3,8 +3,8 @@ package frontend.windows;
 import javax.swing.*;
 import java.awt.*;
 
+import frontend.components.GeneralComponent;
 import frontend.panels.*;
-import frontend.utilities.ComponentUtil;
 import frontend.utilities.Theme;
 
 public class MainWindow extends JFrame {
@@ -20,7 +20,7 @@ public class MainWindow extends JFrame {
 
     public MainWindow() {
 
-        setTitle("Student Record Management System");
+        setTitle("RAGGS | Student Record Management System");
         setSize(1280, 720);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -33,12 +33,12 @@ public class MainWindow extends JFrame {
 
         Color sidebarColor = Theme.SIDEBAR;
 
-        JButton dashboardBtn = ComponentUtil.sidebarButton("Dashboard", sidebarColor);
-        JButton studentBtn = ComponentUtil.sidebarButton("Students", sidebarColor);
-        JButton courseBtn = ComponentUtil.sidebarButton("Courses", sidebarColor);
-        JButton enrollmentBtn = ComponentUtil.sidebarButton("Enrollment", sidebarColor);
-        JButton gradeBtn = ComponentUtil.sidebarButton("Grades", sidebarColor);
-        JButton logoutBtn = ComponentUtil.logoutButton("Logout");
+        JButton dashboardBtn = GeneralComponent.sidebarButton("Dashboard", sidebarColor);
+        JButton studentBtn = GeneralComponent.sidebarButton("Students", sidebarColor);
+        JButton courseBtn = GeneralComponent.sidebarButton("Courses", sidebarColor);
+        JButton enrollmentBtn = GeneralComponent.sidebarButton("Enrollment", sidebarColor);
+        JButton gradeBtn = GeneralComponent.sidebarButton("Grades", sidebarColor);
+        JButton logoutBtn = GeneralComponent.logoutButton("Logout");
 
         sidebar.add(dashboardBtn);
         sidebar.add(studentBtn);
@@ -74,11 +74,22 @@ public class MainWindow extends JFrame {
         enrollmentBtn.addActionListener(e -> cardLayout.show(contentPanel, "enrollment"));
         gradeBtn.addActionListener(e -> cardLayout.show(contentPanel, "grades"));
 
-        logoutBtn.addActionListener(e -> {
-            dispose();
-            new LoginWindow();
-        });
+        logoutBtn.addActionListener(e -> logout());
 
         setVisible(true);
+    }
+
+    private void logout(){
+        int choice = JOptionPane.showConfirmDialog(
+            this,
+            "Are you sure you want to logout?",
+            "Logout Confirmation",
+            JOptionPane.YES_NO_OPTION
+        );
+
+        if (choice == JOptionPane.YES_OPTION){
+            dispose();
+            new LoginWindow();
+        }
     }
 }

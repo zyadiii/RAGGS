@@ -2,6 +2,9 @@ package frontend.panels;
 
 import backend.dao.CourseDAO;
 import backend.models.Course;
+import frontend.components.CRUDButtonComponent;
+import frontend.components.SearchBarComponent;
+import frontend.utilities.ThemeUtil;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -11,24 +14,31 @@ import java.util.List;
 public class CoursePanel extends JPanel {
 
     private JTextField searchField;
-    private JButton searchButton;
 
     private JTable courseTable;
     private DefaultTableModel tableModel;
 
     public CoursePanel() {
+
         setLayout(new BorderLayout(10, 10));
 
+        // ================= TOP PANEL =================
         JPanel topPanel = new JPanel(new BorderLayout(10, 10));
+        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        topPanel.setOpaque(false);
 
-        searchField = new JTextField();
-        searchButton = new JButton("Search");
+        // TITLE LEFT
+        JLabel title = new JLabel("COURSES");
+        ThemeUtil.styleTitle(title);
+        topPanel.add(title, BorderLayout.WEST);
 
-        topPanel.add(searchField, BorderLayout.CENTER);
-        topPanel.add(searchButton, BorderLayout.EAST);
+        // SEARCH RIGHT
+        SearchBarComponent searchBar = new SearchBarComponent();
+        topPanel.add(searchBar, BorderLayout.EAST);
 
         add(topPanel, BorderLayout.NORTH);
 
+        // ================= TABLE =================
         String[] columns = {
                 "ID",
                 "Course Code",
@@ -49,11 +59,14 @@ public class CoursePanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(courseTable);
         add(scrollPane, BorderLayout.CENTER);
 
-        CRUDButtonPanel buttonPanel = new CRUDButtonPanel();
-
+        // ================= BUTTONS =================
+        CRUDButtonComponent buttonPanel = new CRUDButtonComponent();
         add(buttonPanel, BorderLayout.SOUTH);
 
-        searchButton.addActionListener(e -> searchCourses());
+        // ================= EVENTS =================
+
+        searchBar.getSearchButton().addActionListener(e -> searchCourses());
+
         buttonPanel.getRefreshButton().addActionListener(e -> loadCourses());
         buttonPanel.getAddButton().addActionListener(e -> addCourse());
         buttonPanel.getEditButton().addActionListener(e -> editCourse());

@@ -1,11 +1,15 @@
-package frontend.utilities;
+package frontend.components;
 
 import javax.swing.*;
+
+import frontend.utilities.Theme;
+import frontend.utilities.ThemeUtil;
+
 import java.awt.*;
 
-public class ComponentUtil {
+public class GeneralComponent {
 
-    private ComponentUtil() {}
+    private GeneralComponent() {}
 
     // ===== GENERAL SIDEBAR BUTTONS =====
     public static JButton sidebarButton(String text, Color baseColor) {

@@ -4,6 +4,9 @@ import backend.dao.ProgramDAO;
 import backend.dao.StudentDAO;
 import backend.models.Program;
 import backend.models.Student;
+import frontend.components.CRUDButtonComponent;
+import frontend.components.SearchBarComponent;
+import frontend.utilities.ThemeUtil;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -14,25 +17,27 @@ public class StudentPanel extends JPanel {
 
     private JTextField searchField;
 
-    private JButton searchButton;
-
     private JTable studentTable;
     private DefaultTableModel tableModel;
 
     public StudentPanel() {
-
         setLayout(new BorderLayout(10, 10));
 
+        // ================= TOP PANEL =================
         JPanel topPanel = new JPanel(new BorderLayout(10, 10));
+        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        topPanel.setOpaque(false);
 
-        searchField = new JTextField();
-        searchButton = new JButton("Search");
+        JLabel title = new JLabel("STUDENTS");
+        ThemeUtil.styleTitle(title);
+        topPanel.add(title, BorderLayout.WEST);
 
-        topPanel.add(searchField, BorderLayout.CENTER);
-        topPanel.add(searchButton, BorderLayout.EAST);
+        SearchBarComponent searchBar = new SearchBarComponent();
+        topPanel.add(searchBar, BorderLayout.EAST);
 
         add(topPanel, BorderLayout.NORTH);
 
+        // ================= TABLE =================
         String[] columns = {
                 "ID",
                 "First Name",
@@ -42,7 +47,6 @@ public class StudentPanel extends JPanel {
                 "Contact No.",
                 "Program",
                 "Status"
-            
         };
 
         tableModel = new DefaultTableModel(columns, 0) {
@@ -58,11 +62,14 @@ public class StudentPanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(studentTable);
         add(scrollPane, BorderLayout.CENTER);
 
-        CRUDButtonPanel buttonPanel = new CRUDButtonPanel();
-
+        // ================= BUTTONS =================
+        CRUDButtonComponent buttonPanel = new CRUDButtonComponent();
         add(buttonPanel, BorderLayout.SOUTH);
 
-        searchButton.addActionListener(e -> searchStudents());
+        searchBar.getSearchButton().addActionListener(e -> searchStudents());
+
+        searchField = searchBar.getSearchField();
+
         buttonPanel.getRefreshButton().addActionListener(e -> loadStudents());
         buttonPanel.getAddButton().addActionListener(e -> addStudent());
         buttonPanel.getEditButton().addActionListener(e -> editStudent());

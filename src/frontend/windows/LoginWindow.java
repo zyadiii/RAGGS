@@ -19,7 +19,7 @@ public class LoginWindow extends JFrame {
     // Window UI Initialization/Constructor
     public LoginWindow(){
 
-        setTitle("RAGGS");
+        setTitle("RAGGS | Student Record Management System");
         setSize(400, 350);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);

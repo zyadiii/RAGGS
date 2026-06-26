@@ -6,6 +6,9 @@ import backend.dao.CourseDAO;
 import backend.dao.EnrollmentDAO;
 import backend.models.Grade;
 import backend.models.Student;
+import frontend.components.CRUDButtonComponent;
+import frontend.components.SearchBarComponent;
+import frontend.utilities.ThemeUtil;
 import backend.models.Course;
 import backend.models.Enrollment;
 
@@ -17,7 +20,6 @@ import java.util.List;
 public class GradePanel extends JPanel {
 
     private JTextField searchField;
-    private JButton searchButton;
 
     private JTable gradeTable;
     private DefaultTableModel tableModel;
@@ -26,16 +28,23 @@ public class GradePanel extends JPanel {
 
         setLayout(new BorderLayout(10, 10));
 
+        // ================= TOP PANEL =================
         JPanel topPanel = new JPanel(new BorderLayout(10, 10));
+        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        topPanel.setOpaque(false);
 
-        searchField = new JTextField();
-        searchButton = new JButton("Search");
+        // TITLE LEFT
+        JLabel title = new JLabel("GRADE");
+        ThemeUtil.styleTitle(title);
+        topPanel.add(title, BorderLayout.WEST);
 
-        topPanel.add(searchField, BorderLayout.CENTER);
-        topPanel.add(searchButton, BorderLayout.EAST);
+        // SEARCH RIGHT
+        SearchBarComponent searchBar = new SearchBarComponent();
+        topPanel.add(searchBar, BorderLayout.EAST);
 
         add(topPanel, BorderLayout.NORTH);
 
+        // ================= TABLE =================
         String[] columnNames = {
                 "ID",
                 "Final Grade",
@@ -56,11 +65,14 @@ public class GradePanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(gradeTable);
         add(scrollPane, BorderLayout.CENTER);
 
-        CRUDButtonPanel buttonPanel = new CRUDButtonPanel();
-
+        // ================= BUTTONS =================
+        CRUDButtonComponent buttonPanel = new CRUDButtonComponent();
         add(buttonPanel, BorderLayout.SOUTH);
 
-        searchButton.addActionListener(e -> searchGrades());
+        // ================= EVENTS =================
+
+        searchBar.getSearchButton().addActionListener(e -> searchGrades());
+
         buttonPanel.getRefreshButton().addActionListener(e -> loadGrades());
         buttonPanel.getAddButton().addActionListener(e -> addGrade());
         buttonPanel.getEditButton().addActionListener(e -> editGrade());

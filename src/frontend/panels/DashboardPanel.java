@@ -6,6 +6,8 @@ import java.awt.*;
 import backend.dao.CourseDAO;
 import backend.dao.EnrollmentDAO;
 import backend.dao.StudentDAO;
+import frontend.components.CRUDButtonComponent;
+import frontend.utilities.ThemeUtil;
 
 public class DashboardPanel extends JPanel {
 
@@ -15,8 +17,17 @@ public class DashboardPanel extends JPanel {
     private JLabel activeStudentCountLabel;
 
     public DashboardPanel() {
-
         setLayout(new BorderLayout());
+
+        JLabel title = new JLabel("DASHBOARD");
+        ThemeUtil.styleTitle(title);
+
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        topPanel.add(title, BorderLayout.WEST);
+
+        add(topPanel, BorderLayout.NORTH);
 
         studentCountLabel = createCard("Students", "0");
         courseCountLabel = createCard("Courses", "0");
@@ -32,7 +43,7 @@ public class DashboardPanel extends JPanel {
 
         add(cardPanel, BorderLayout.CENTER);
 
-        CRUDButtonPanel buttonPanel = new CRUDButtonPanel();
+        CRUDButtonComponent buttonPanel = new CRUDButtonComponent();
 
         buttonPanel.getAddButton().setVisible(false);
         buttonPanel.getEditButton().setVisible(false);

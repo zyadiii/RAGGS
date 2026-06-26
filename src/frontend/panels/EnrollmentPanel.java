@@ -6,6 +6,9 @@ import backend.dao.StudentDAO;
 import backend.models.Course;
 import backend.models.Enrollment;
 import backend.models.Student;
+import frontend.components.CRUDButtonComponent;
+import frontend.components.SearchBarComponent;
+import frontend.utilities.ThemeUtil;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -15,7 +18,6 @@ import java.util.List;
 public class EnrollmentPanel extends JPanel {
 
     private JTextField searchField;
-    private JButton searchButton;
 
     private JTable enrollmentTable;
     private DefaultTableModel tableModel;
@@ -24,16 +26,23 @@ public class EnrollmentPanel extends JPanel {
 
         setLayout(new BorderLayout(10, 10));
 
+        // ================= TOP PANEL =================
         JPanel topPanel = new JPanel(new BorderLayout(10, 10));
+        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        topPanel.setOpaque(false);
 
-        searchField = new JTextField();
-        searchButton = new JButton("Search");
+        // TITLE LEFT
+        JLabel title = new JLabel("ENROLLMENT");
+        ThemeUtil.styleTitle(title);
+        topPanel.add(title, BorderLayout.WEST);
 
-        topPanel.add(searchField, BorderLayout.CENTER);
-        topPanel.add(searchButton, BorderLayout.EAST);
+        // SEARCH RIGHT
+        SearchBarComponent searchBar = new SearchBarComponent();
+        topPanel.add(searchBar, BorderLayout.EAST);
 
         add(topPanel, BorderLayout.NORTH);
 
+        // ================= TABLE =================
         String[] columns = {
                 "ID",
                 "Enrollment Date",
@@ -56,10 +65,14 @@ public class EnrollmentPanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(enrollmentTable);
         add(scrollPane, BorderLayout.CENTER);
 
-        CRUDButtonPanel buttonPanel = new CRUDButtonPanel();
+        // ================= BUTTONS =================
+        CRUDButtonComponent buttonPanel = new CRUDButtonComponent();
         add(buttonPanel, BorderLayout.SOUTH);
 
-        searchButton.addActionListener(e -> searchEnrollments());
+        // ================= EVENTS =================
+
+        searchBar.getSearchButton().addActionListener(e -> searchEnrollments());
+
         buttonPanel.getRefreshButton().addActionListener(e -> loadEnrollments());
         buttonPanel.getAddButton().addActionListener(e -> addEnrollment());
         buttonPanel.getEditButton().addActionListener(e -> editEnrollment());
