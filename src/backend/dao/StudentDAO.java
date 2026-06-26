@@ -54,7 +54,12 @@ public class StudentDAO extends BaseDAO {
 
         List<Student> students = new ArrayList<>();
 
-        String sql = "SELECT * FROM Student";
+        String sql = """
+            SELECT s.*, p.program_name
+            FROM Student s
+            LEFT JOIN Program p
+                ON s.program_id = p.program_id
+            """;
 
         try (
             Connection conn = getConnection();
@@ -77,6 +82,7 @@ public class StudentDAO extends BaseDAO {
                 student.setStatus(rs.getString("status"));
                 student.setGender(rs.getString("gender"));
                 student.setProgramId(rs.getInt("program_id"));
+                student.setProgramName(rs.getString("program_name"));
 
                 students.add(student);
             }
@@ -91,9 +97,11 @@ public class StudentDAO extends BaseDAO {
     public Student getById(int studentId) {
 
         String sql = """
-                SELECT *
-                FROM Student
-                WHERE student_id = ?
+                SELECT s.*, p.program_name
+                FROM Student s
+                LEFT JOIN Program p
+                ON s.program_id = p.program_id
+                WHERE s.student_id = ?
                 """;
 
         try (
@@ -120,6 +128,7 @@ public class StudentDAO extends BaseDAO {
                 student.setStatus(rs.getString("status"));
                 student.setGender(rs.getString("gender"));
                 student.setProgramId(rs.getInt("program_id"));
+                student.setProgramName(rs.getString("program_name"));
 
                 return student;
             }

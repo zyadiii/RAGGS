@@ -12,6 +12,7 @@ public class Student {
     private String status;
     private String gender;
     private int program_id;
+    private String programName;
 
     public Student() {}
 
@@ -127,6 +128,14 @@ public class Student {
 
     public void setProgramId(int program_id) {
         this.program_id = program_id;
+    }
+
+    public String getProgramName() {
+        return programName;
+    }
+
+    public void setProgramName(String programName) {
+        this.programName = programName;
     }
 
     @Override

@@ -316,7 +316,6 @@ public class StudentPanel extends JPanel {
     }
 
     private void loadStudents() {
-
         tableModel.setRowCount(0);
 
         List<Student> students = new StudentDAO().getAll();
@@ -332,7 +331,7 @@ public class StudentPanel extends JPanel {
                 student.getLastName(),
                 student.getGender(),
                 student.getContactNo(),
-                student.getProgramId(),
+                student.getProgramName(),
                 student.getStatus()
             });
         }
