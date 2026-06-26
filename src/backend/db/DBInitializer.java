@@ -52,7 +52,10 @@ public class DBInitializer {
                     contact_no TEXT,
                     citizenship TEXT,
                     status TEXT,
-                    gender TEXT
+                    gender TEXT,
+                    program_id INTEGER NOT NULL,
+                    FOREIGN KEY (program_id)
+                        REFERENCES Program(program_id)
                 )
             """);
 

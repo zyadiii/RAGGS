@@ -11,6 +11,7 @@ public class Student {
     private String citizenship;
     private String status;
     private String gender;
+    private int program_id;
 
     public Student() {}
 
@@ -24,7 +25,8 @@ public class Student {
             String contactNo,
             String citizenship,
             String status,
-            String gender
+            String gender,
+            int program_id
     ) {
         this.studentId = studentId;
         this.firstName = firstName;
@@ -36,6 +38,7 @@ public class Student {
         this.citizenship = citizenship;
         this.status = status;
         this.gender = gender;
+        this.program_id = program_id;
     }
 
     public int getStudentId() {
@@ -116,6 +119,14 @@ public class Student {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public int getProgramId() {
+        return program_id;
+    }
+
+    public void setProgramId(int program_id) {
+        this.program_id = program_id;
     }
 
     @Override

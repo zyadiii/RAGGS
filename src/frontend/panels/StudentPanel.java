@@ -1,6 +1,8 @@
 package frontend.panels;
 
+import backend.dao.ProgramDAO;
 import backend.dao.StudentDAO;
+import backend.models.Program;
 import backend.models.Student;
 
 import javax.swing.*;
@@ -37,8 +39,10 @@ public class StudentPanel extends JPanel {
                 "Middle Name",
                 "Last Name",
                 "Gender",
-                "Status",
-                "Contact No"
+                "Contact No.",
+                "Program",
+                "Status"
+            
         };
 
         tableModel = new DefaultTableModel(columns, 0) {
@@ -68,7 +72,6 @@ public class StudentPanel extends JPanel {
     }
 
     private void addStudent() {
-
         JTextField firstNameField = new JTextField();
         JTextField middleNameField = new JTextField();
         JTextField lastNameField = new JTextField();
@@ -85,6 +88,14 @@ public class StudentPanel extends JPanel {
                 new String[]{"Male", "Female"}
         );
 
+        JComboBox<Program> programCombo = new JComboBox<>();
+
+        ProgramDAO programDAO = new ProgramDAO();
+        
+        for (Program p : programDAO.getAll()) {
+            programCombo.addItem(p);
+        }
+
         JPanel panel = new JPanel(new GridLayout(0, 2));
 
         panel.add(new JLabel("First Name:"));
@@ -95,6 +106,9 @@ public class StudentPanel extends JPanel {
 
         panel.add(new JLabel("Last Name:"));
         panel.add(lastNameField);
+
+        panel.add(new JLabel("Gender:"));
+        panel.add(genderCombo);
 
         panel.add(new JLabel("Birth Date:"));
         panel.add(birthDateField);
@@ -108,12 +122,12 @@ public class StudentPanel extends JPanel {
         panel.add(new JLabel("Citizenship:"));
         panel.add(citizenshipField);
 
+        panel.add(new JLabel("Program:"));
+        panel.add(programCombo);
+
         panel.add(new JLabel("Status:"));
         panel.add(statusCombo);
-
-        panel.add(new JLabel("Gender:"));
-        panel.add(genderCombo);
-
+        
         int result = JOptionPane.showConfirmDialog(
                 this,
                 panel,
@@ -136,6 +150,11 @@ public class StudentPanel extends JPanel {
             student.setCitizenship(citizenshipField.getText());
             student.setStatus((String) statusCombo.getSelectedItem());
             student.setGender((String) genderCombo.getSelectedItem());
+            Program selectedProgram = (Program) programCombo.getSelectedItem();
+
+            if (selectedProgram != null) {
+                student.setProgramId(selectedProgram.getProgramId());
+            }
 
             new StudentDAO().create(student);
 
@@ -149,7 +168,6 @@ public class StudentPanel extends JPanel {
     }
 
     private void editStudent() {
-
         int row = studentTable.getSelectedRow();
 
         if (row == -1) {
@@ -172,7 +190,7 @@ public class StudentPanel extends JPanel {
         JTextField lastNameField = new JTextField(student.getLastName());
         JTextField birthDateField = new JTextField(student.getBirthDate());
         JTextField addressField = new JTextField(student.getAddress());
-        JTextField contactField = new JTextField(student.getContactNo());
+        JTextField contactNoField = new JTextField(student.getContactNo());
         JTextField citizenshipField = new JTextField(student.getCitizenship());
 
         JComboBox<String> statusCombo = new JComboBox<>(
@@ -182,6 +200,18 @@ public class StudentPanel extends JPanel {
         JComboBox<String> genderCombo = new JComboBox<>(
             new String[]{"Male", "Female"}
         );
+
+        JComboBox<Program> programCombo = new JComboBox<>();
+
+        ProgramDAO programDAO = new ProgramDAO();
+
+        for (Program p : programDAO.getAll()) {
+            programCombo.addItem(p);
+
+            if (p.getProgramId() == student.getProgramId()) {
+                programCombo.setSelectedItem(p);
+            }
+        }
 
         statusCombo.setSelectedItem(student.getStatus());
         genderCombo.setSelectedItem(student.getGender());
@@ -197,6 +227,9 @@ public class StudentPanel extends JPanel {
         panel.add(new JLabel("Last Name:"));
         panel.add(lastNameField);
 
+        panel.add(new JLabel("Gender:"));
+        panel.add(genderCombo);
+
         panel.add(new JLabel("Birth Date:"));
         panel.add(birthDateField);
 
@@ -204,13 +237,13 @@ public class StudentPanel extends JPanel {
         panel.add(addressField);
 
         panel.add(new JLabel("Contact No:"));
-        panel.add(contactField);
+        panel.add(contactNoField);
 
         panel.add(new JLabel("Citizenship:"));
         panel.add(citizenshipField);
 
-        panel.add(new JLabel("Gender:"));
-        panel.add(genderCombo);
+        panel.add(new JLabel("Program:"));
+        panel.add(programCombo);
 
         panel.add(new JLabel("Status:"));
         panel.add(statusCombo);
@@ -231,10 +264,15 @@ public class StudentPanel extends JPanel {
             student.setLastName(lastNameField.getText());
             student.setBirthDate(birthDateField.getText());
             student.setAddress(addressField.getText());
-            student.setContactNo(contactField.getText());
+            student.setContactNo(contactNoField.getText());
             student.setCitizenship(citizenshipField.getText());
             student.setStatus((String) statusCombo.getSelectedItem());
             student.setGender((String) genderCombo.getSelectedItem());
+            Program selectedProgram = (Program) programCombo.getSelectedItem();
+
+            if (selectedProgram != null) {
+                student.setProgramId(selectedProgram.getProgramId());
+            }
 
             studentDAO.update(student);
 
@@ -288,13 +326,14 @@ public class StudentPanel extends JPanel {
             if (student == null) continue;
 
             tableModel.addRow(new Object[]{
-                    student.getStudentId(),
-                    student.getFirstName(),
-                    student.getMiddleName(),
-                    student.getLastName(),
-                    student.getGender(),
-                    student.getStatus(),
-                    student.getContactNo()
+                student.getStudentId(),
+                student.getFirstName(),
+                student.getMiddleName(),
+                student.getLastName(),
+                student.getGender(),
+                student.getContactNo(),
+                student.getProgramId(),
+                student.getStatus()
             });
         }
     }
@@ -317,13 +356,14 @@ public class StudentPanel extends JPanel {
 
             if (student != null) {
                 tableModel.addRow(new Object[]{
-                        student.getStudentId(),
-                        student.getFirstName(),
-                        student.getMiddleName(),
-                        student.getLastName(),
-                        student.getGender(),
-                        student.getStatus(),
-                        student.getContactNo()
+                    student.getStudentId(),
+                    student.getFirstName(),
+                    student.getMiddleName(),
+                    student.getLastName(),
+                    student.getGender(),
+                    student.getContactNo(),
+                    student.getProgramId(),
+                    student.getStatus()
                 });
             } else {
                 JOptionPane.showMessageDialog(this, "Student not found.");

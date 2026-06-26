@@ -21,9 +21,10 @@ public class StudentDAO extends BaseDAO {
                     contact_no,
                     citizenship,
                     status,
-                    gender
+                    gender,
+                    program_id
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try (
@@ -40,6 +41,7 @@ public class StudentDAO extends BaseDAO {
             pstmt.setString(7, student.getCitizenship());
             pstmt.setString(8, student.getStatus());
             pstmt.setString(9, student.getGender());
+            pstmt.setInt(10, student.getProgramId());
 
             pstmt.executeUpdate();
 
@@ -74,6 +76,7 @@ public class StudentDAO extends BaseDAO {
                 student.setCitizenship(rs.getString("citizenship"));
                 student.setStatus(rs.getString("status"));
                 student.setGender(rs.getString("gender"));
+                student.setProgramId(rs.getInt("program_id"));
 
                 students.add(student);
             }
@@ -116,6 +119,7 @@ public class StudentDAO extends BaseDAO {
                 student.setCitizenship(rs.getString("citizenship"));
                 student.setStatus(rs.getString("status"));
                 student.setGender(rs.getString("gender"));
+                student.setProgramId(rs.getInt("program_id"));
 
                 return student;
             }
@@ -140,7 +144,8 @@ public class StudentDAO extends BaseDAO {
                     contact_no = ?,
                     citizenship = ?,
                     status = ?,
-                    gender = ?
+                    gender = ?,
+                    program_id = ?
                 WHERE student_id = ?
                 """;
 
@@ -158,7 +163,8 @@ public class StudentDAO extends BaseDAO {
             pstmt.setString(7, student.getCitizenship());
             pstmt.setString(8, student.getStatus());
             pstmt.setString(9, student.getGender());
-            pstmt.setInt(10, student.getStudentId());
+            pstmt.setInt(10, student.getProgramId());
+            pstmt.setInt(11, student.getStudentId());
 
             pstmt.executeUpdate();
 
