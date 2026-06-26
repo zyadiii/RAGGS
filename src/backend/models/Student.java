@@ -10,7 +10,7 @@ public class Student {
     private String contactNo;
     private String citizenship;
     private String status;
-    private int blockId;
+    private String gender;
 
     public Student() {}
 
@@ -24,7 +24,7 @@ public class Student {
             String contactNo,
             String citizenship,
             String status,
-            int blockId
+            String gender
     ) {
         this.studentId = studentId;
         this.firstName = firstName;
@@ -35,7 +35,7 @@ public class Student {
         this.contactNo = contactNo;
         this.citizenship = citizenship;
         this.status = status;
-        this.blockId = blockId;
+        this.gender = gender;
     }
 
     public int getStudentId() {
@@ -110,12 +110,12 @@ public class Student {
         this.status = status;
     }
 
-    public int getBlockId() {
-        return blockId;
+    public String getGender() {
+        return gender;
     }
 
-    public void setBlockId(int blockId) {
-        this.blockId = blockId;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     @Override

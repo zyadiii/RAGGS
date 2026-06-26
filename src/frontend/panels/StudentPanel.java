@@ -13,10 +13,6 @@ public class StudentPanel extends JPanel {
     private JTextField searchField;
 
     private JButton searchButton;
-    private JButton addButton;
-    private JButton editButton;
-    private JButton deleteButton;
-    private JButton refreshButton;
 
     private JTable studentTable;
     private DefaultTableModel tableModel;
@@ -40,7 +36,7 @@ public class StudentPanel extends JPanel {
                 "First Name",
                 "Middle Name",
                 "Last Name",
-                "Block",
+                "Gender",
                 "Status",
                 "Contact No"
         };
@@ -58,25 +54,15 @@ public class StudentPanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(studentTable);
         add(scrollPane, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-
-        addButton = new JButton("Add");
-        editButton = new JButton("Edit");
-        deleteButton = new JButton("Delete");
-        refreshButton = new JButton("Refresh");
-
-        buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(refreshButton);
+        CRUDButtonPanel buttonPanel = new CRUDButtonPanel();
 
         add(buttonPanel, BorderLayout.SOUTH);
 
         searchButton.addActionListener(e -> searchStudents());
-        refreshButton.addActionListener(e -> loadStudents());
-        addButton.addActionListener(e -> addStudent());
-        editButton.addActionListener(e -> editStudent());
-        deleteButton.addActionListener(e -> deleteStudent());
+        buttonPanel.getRefreshButton().addActionListener(e -> loadStudents());
+        buttonPanel.getAddButton().addActionListener(e -> addStudent());
+        buttonPanel.getEditButton().addActionListener(e -> editStudent());
+        buttonPanel.getDeleteButton().addActionListener(e -> deleteStudent());
 
         loadStudents();
     }
@@ -92,10 +78,12 @@ public class StudentPanel extends JPanel {
         JTextField citizenshipField = new JTextField();
 
         JComboBox<String> statusCombo = new JComboBox<>(
-                new String[]{"Continuing", "Regular", "Dropped"}
+                new String[]{"Active", "Inactive", "Graduated", "Dropped"}
         );
 
-        JTextField blockIdField = new JTextField();
+        JComboBox<String> genderCombo = new JComboBox<>(
+                new String[]{"Male", "Female"}
+        );
 
         JPanel panel = new JPanel(new GridLayout(0, 2));
 
@@ -123,8 +111,8 @@ public class StudentPanel extends JPanel {
         panel.add(new JLabel("Status:"));
         panel.add(statusCombo);
 
-        panel.add(new JLabel("Block ID:"));
-        panel.add(blockIdField);
+        panel.add(new JLabel("Gender:"));
+        panel.add(genderCombo);
 
         int result = JOptionPane.showConfirmDialog(
                 this,
@@ -147,7 +135,7 @@ public class StudentPanel extends JPanel {
             student.setContactNo(contactNoField.getText());
             student.setCitizenship(citizenshipField.getText());
             student.setStatus((String) statusCombo.getSelectedItem());
-            student.setBlockId(Integer.parseInt(blockIdField.getText()));
+            student.setGender((String) genderCombo.getSelectedItem());
 
             new StudentDAO().create(student);
 
@@ -186,13 +174,17 @@ public class StudentPanel extends JPanel {
         JTextField addressField = new JTextField(student.getAddress());
         JTextField contactField = new JTextField(student.getContactNo());
         JTextField citizenshipField = new JTextField(student.getCitizenship());
-        JTextField blockIdField = new JTextField(String.valueOf(student.getBlockId()));
 
         JComboBox<String> statusCombo = new JComboBox<>(
-                new String[]{"Continuing", "Regular", "Dropped"}
+                new String[]{"Active", "Inactive", "Graduated", "Dropped"}
+        );
+
+        JComboBox<String> genderCombo = new JComboBox<>(
+            new String[]{"Male", "Female"}
         );
 
         statusCombo.setSelectedItem(student.getStatus());
+        genderCombo.setSelectedItem(student.getGender());
 
         JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
 
@@ -217,8 +209,8 @@ public class StudentPanel extends JPanel {
         panel.add(new JLabel("Citizenship:"));
         panel.add(citizenshipField);
 
-        panel.add(new JLabel("Block ID:"));
-        panel.add(blockIdField);
+        panel.add(new JLabel("Gender:"));
+        panel.add(genderCombo);
 
         panel.add(new JLabel("Status:"));
         panel.add(statusCombo);
@@ -242,7 +234,7 @@ public class StudentPanel extends JPanel {
             student.setContactNo(contactField.getText());
             student.setCitizenship(citizenshipField.getText());
             student.setStatus((String) statusCombo.getSelectedItem());
-            student.setBlockId(Integer.parseInt(blockIdField.getText().trim()));
+            student.setGender((String) genderCombo.getSelectedItem());
 
             studentDAO.update(student);
 
@@ -256,7 +248,6 @@ public class StudentPanel extends JPanel {
     }
 
     private void deleteStudent() {
-
         int row = studentTable.getSelectedRow();
 
         if (row == -1) {
@@ -301,7 +292,7 @@ public class StudentPanel extends JPanel {
                     student.getFirstName(),
                     student.getMiddleName(),
                     student.getLastName(),
-                    student.getBlockId(),
+                    student.getGender(),
                     student.getStatus(),
                     student.getContactNo()
             });
@@ -330,7 +321,7 @@ public class StudentPanel extends JPanel {
                         student.getFirstName(),
                         student.getMiddleName(),
                         student.getLastName(),
-                        student.getBlockId(),
+                        student.getGender(),
                         student.getStatus(),
                         student.getContactNo()
                 });

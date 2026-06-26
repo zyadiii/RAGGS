@@ -12,6 +12,7 @@ public class DashboardPanel extends JPanel {
     private JLabel studentCountLabel;
     private JLabel courseCountLabel;
     private JLabel enrollmentCountLabel;
+    private JLabel activeStudentCountLabel;
 
     public DashboardPanel() {
 
@@ -20,12 +21,14 @@ public class DashboardPanel extends JPanel {
         studentCountLabel = createCard("Students", "0");
         courseCountLabel = createCard("Courses", "0");
         enrollmentCountLabel = createCard("Enrollments", "0");
+        activeStudentCountLabel = createCard("Active Students", "0");
 
         JPanel cardPanel = new JPanel(new GridLayout(2, 2, 20, 20));
 
         cardPanel.add(studentCountLabel);
         cardPanel.add(courseCountLabel);
         cardPanel.add(enrollmentCountLabel);
+        cardPanel.add(activeStudentCountLabel);
 
         add(cardPanel, BorderLayout.CENTER);
 
@@ -63,19 +66,22 @@ public class DashboardPanel extends JPanel {
         updateCounts(
                 studentDAO.count(),
                 courseDAO.count(),
-                enrollmentDAO.count()
+                enrollmentDAO.count(),
+                studentDAO.countActive()
         );
     }
 
     public void updateCounts(
             int students,
             int courses,
-            int enrollments
+            int enrollments,
+            int activeStudents
     ) {
 
         studentCountLabel.setText(html("Students", students));
         courseCountLabel.setText(html("Courses", courses));
         enrollmentCountLabel.setText(html("Enrollments", enrollments));
+        activeStudentCountLabel.setText(html("Active Students", activeStudents));
     }
 
     private String html(String title, int value) {

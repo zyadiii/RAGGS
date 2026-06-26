@@ -40,17 +40,6 @@ public class DBInitializer {
                 )
             """);
 
-            // Block
-            stmt.execute("""
-                CREATE TABLE IF NOT EXISTS Block (
-                    block_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    block_name TEXT NOT NULL,
-                    program_id INTEGER NOT NULL,
-                    FOREIGN KEY (program_id)
-                        REFERENCES Program(program_id)
-                )
-            """);
-
             // Student
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS Student (
@@ -63,9 +52,7 @@ public class DBInitializer {
                     contact_no TEXT,
                     citizenship TEXT,
                     status TEXT,
-                    block_id INTEGER,
-                    FOREIGN KEY (block_id)
-                        REFERENCES Block(block_id)
+                    gender TEXT
                 )
             """);
 

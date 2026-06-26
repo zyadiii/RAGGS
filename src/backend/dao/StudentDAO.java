@@ -21,7 +21,7 @@ public class StudentDAO extends BaseDAO {
                     contact_no,
                     citizenship,
                     status,
-                    block_id
+                    gender
                 )
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
@@ -39,7 +39,7 @@ public class StudentDAO extends BaseDAO {
             pstmt.setString(6, student.getContactNo());
             pstmt.setString(7, student.getCitizenship());
             pstmt.setString(8, student.getStatus());
-            pstmt.setInt(9, student.getBlockId());
+            pstmt.setString(9, student.getGender());
 
             pstmt.executeUpdate();
 
@@ -73,7 +73,7 @@ public class StudentDAO extends BaseDAO {
                 student.setContactNo(rs.getString("contact_no"));
                 student.setCitizenship(rs.getString("citizenship"));
                 student.setStatus(rs.getString("status"));
-                student.setBlockId(rs.getInt("block_id"));
+                student.setGender(rs.getString("gender"));
 
                 students.add(student);
             }
@@ -115,7 +115,7 @@ public class StudentDAO extends BaseDAO {
                 student.setContactNo(rs.getString("contact_no"));
                 student.setCitizenship(rs.getString("citizenship"));
                 student.setStatus(rs.getString("status"));
-                student.setBlockId(rs.getInt("block_id"));
+                student.setGender(rs.getString("gender"));
 
                 return student;
             }
@@ -140,7 +140,7 @@ public class StudentDAO extends BaseDAO {
                     contact_no = ?,
                     citizenship = ?,
                     status = ?,
-                    block_id = ?
+                    gender = ?
                 WHERE student_id = ?
                 """;
 
@@ -157,7 +157,7 @@ public class StudentDAO extends BaseDAO {
             pstmt.setString(6, student.getContactNo());
             pstmt.setString(7, student.getCitizenship());
             pstmt.setString(8, student.getStatus());
-            pstmt.setInt(9, student.getBlockId());
+            pstmt.setString(9, student.getGender());
             pstmt.setInt(10, student.getStudentId());
 
             pstmt.executeUpdate();
@@ -197,6 +197,24 @@ public class StudentDAO extends BaseDAO {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery()
         ) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    public int countActive() {
+        String sql = "SELECT COUNT(*) FROM Student WHERE status = 'Active'";
+
+        try (Connection conn = getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery()) {
 
             if (rs.next()) {
                 return rs.getInt(1);
