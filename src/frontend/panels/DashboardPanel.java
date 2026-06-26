@@ -32,16 +32,20 @@ public class DashboardPanel extends JPanel {
 
         add(cardPanel, BorderLayout.CENTER);
 
-        JButton refreshButton = new JButton("Refresh");
-        refreshButton.addActionListener(e -> loadCounts());
+        CRUDButtonPanel buttonPanel = new CRUDButtonPanel();
 
-        add(refreshButton, BorderLayout.SOUTH);
+        buttonPanel.getAddButton().setVisible(false);
+        buttonPanel.getEditButton().setVisible(false);
+        buttonPanel.getDeleteButton().setVisible(false);
+
+        buttonPanel.getRefreshButton().addActionListener(e -> loadCounts());
+
+        add(buttonPanel, BorderLayout.SOUTH);
 
         loadCounts();
     }
 
     private JLabel createCard(String title, String value) {
-
         JLabel label = new JLabel(
                 "<html><center>"
                         + "<h2>" + title + "</h2>"
@@ -58,7 +62,6 @@ public class DashboardPanel extends JPanel {
     }
 
     private void loadCounts() {
-
         StudentDAO studentDAO = new StudentDAO();
         CourseDAO courseDAO = new CourseDAO();
         EnrollmentDAO enrollmentDAO = new EnrollmentDAO();
@@ -77,7 +80,6 @@ public class DashboardPanel extends JPanel {
             int enrollments,
             int activeStudents
     ) {
-
         studentCountLabel.setText(html("Students", students));
         courseCountLabel.setText(html("Courses", courses));
         enrollmentCountLabel.setText(html("Enrollments", enrollments));

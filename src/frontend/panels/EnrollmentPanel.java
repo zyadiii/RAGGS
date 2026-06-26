@@ -15,12 +15,7 @@ import java.util.List;
 public class EnrollmentPanel extends JPanel {
 
     private JTextField searchField;
-
     private JButton searchButton;
-    private JButton addButton;
-    private JButton editButton;
-    private JButton deleteButton;
-    private JButton refreshButton;
 
     private JTable enrollmentTable;
     private DefaultTableModel tableModel;
@@ -58,27 +53,17 @@ public class EnrollmentPanel extends JPanel {
         enrollmentTable = new JTable(tableModel);
         enrollmentTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        add(new JScrollPane(enrollmentTable), BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(enrollmentTable);
+        add(scrollPane, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-
-        addButton = new JButton("Add");
-        editButton = new JButton("Edit");
-        deleteButton = new JButton("Delete");
-        refreshButton = new JButton("Refresh");
-
-        buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(refreshButton);
-
+        CRUDButtonPanel buttonPanel = new CRUDButtonPanel();
         add(buttonPanel, BorderLayout.SOUTH);
 
         searchButton.addActionListener(e -> searchEnrollments());
-        refreshButton.addActionListener(e -> loadEnrollments());
-        addButton.addActionListener(e -> addEnrollment());
-        editButton.addActionListener(e -> editEnrollment());
-        deleteButton.addActionListener(e -> deleteEnrollment());
+        buttonPanel.getRefreshButton().addActionListener(e -> loadEnrollments());
+        buttonPanel.getAddButton().addActionListener(e -> addEnrollment());
+        buttonPanel.getEditButton().addActionListener(e -> editEnrollment());
+        buttonPanel.getDeleteButton().addActionListener(e -> deleteEnrollment());
 
         loadEnrollments();
     }
@@ -88,19 +73,26 @@ public class EnrollmentPanel extends JPanel {
         JTextField dateField = new JTextField();
 
         JComboBox<String> semesterCombo =
-                new JComboBox<>(new String[]{"1st Semester", "2nd Semester", "Summer Semester"});
+                new JComboBox<>(new String[]{
+                        "1st Semester",
+                        "2nd Semester",
+                        "Summer Semester"
+                });
 
         JComboBox<String> schoolYearCombo = new JComboBox<>();
+
         for (int year = 2026; year <= 2035; year++) {
             schoolYearCombo.addItem(year + "-" + (year + 1));
         }
 
         JComboBox<Student> studentCombo = new JComboBox<>();
+
         for (Student student : new StudentDAO().getAll()) {
             studentCombo.addItem(student);
         }
 
         JComboBox<Course> courseCombo = new JComboBox<>();
+
         for (Course course : new CourseDAO().getAll()) {
             courseCombo.addItem(course);
         }
@@ -123,7 +115,9 @@ public class EnrollmentPanel extends JPanel {
         panel.add(courseCombo);
 
         int result = JOptionPane.showConfirmDialog(
-                this, panel, "Add Enrollment",
+                this,
+                panel,
+                "Add Enrollment",
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE
         );
@@ -131,6 +125,7 @@ public class EnrollmentPanel extends JPanel {
         if (result != JOptionPane.OK_OPTION) return;
 
         try {
+
             Enrollment enrollment = new Enrollment();
 
             enrollment.setEnrollmentDate(dateField.getText().trim());
@@ -140,8 +135,13 @@ public class EnrollmentPanel extends JPanel {
             Student student = (Student) studentCombo.getSelectedItem();
             Course course = (Course) courseCombo.getSelectedItem();
 
-            enrollment.setStudentId(student.getStudentId());
-            enrollment.setCourseId(course.getCourseId());
+            if (student != null) {
+                enrollment.setStudentId(student.getStudentId());
+            }
+
+            if (course != null) {
+                enrollment.setCourseId(course.getCourseId());
+            }
 
             new EnrollmentDAO().create(enrollment);
 
@@ -149,7 +149,10 @@ public class EnrollmentPanel extends JPanel {
             loadEnrollments();
 
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Failed to add enrollment.\n" + ex.getMessage());
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Failed to add enrollment.\n" + ex.getMessage()
+            );
         }
     }
 
@@ -163,6 +166,7 @@ public class EnrollmentPanel extends JPanel {
         }
 
         int enrollmentId = (int) tableModel.getValueAt(row, 0);
+
         EnrollmentDAO dao = new EnrollmentDAO();
         Enrollment enrollment = dao.getById(enrollmentId);
 
@@ -172,14 +176,50 @@ public class EnrollmentPanel extends JPanel {
         }
 
         JTextField dateField = new JTextField(enrollment.getEnrollmentDate());
-        JTextField schoolYearField = new JTextField(enrollment.getSchoolYear());
 
-        JComboBox<String> semesterCombo =
-                new JComboBox<>(new String[]{"1st Semester", "2nd Semester", "Summer Semester"});
+        JComboBox<String> semesterCombo = new JComboBox<>(
+                new String[]{
+                        "1st Semester",
+                        "2nd Semester",
+                        "Summer Semester"
+                }
+        );
+
         semesterCombo.setSelectedItem(enrollment.getSemester());
 
-        JTextField studentIdField = new JTextField(String.valueOf(enrollment.getStudentId()));
-        JTextField courseIdField = new JTextField(String.valueOf(enrollment.getCourseId()));
+        JComboBox<String> schoolYearCombo = new JComboBox<>();
+
+        for (int year = 2026; year <= 2035; year++) {
+            schoolYearCombo.addItem(year + "-" + (year + 1));
+        }
+
+        schoolYearCombo.setSelectedItem(enrollment.getSchoolYear());
+
+        JComboBox<Student> studentCombo = new JComboBox<>();
+
+        StudentDAO studentDAO = new StudentDAO();
+
+        for (Student student : studentDAO.getAll()) {
+
+            studentCombo.addItem(student);
+
+            if (student.getStudentId() == enrollment.getStudentId()) {
+                studentCombo.setSelectedItem(student);
+            }
+        }
+
+        JComboBox<Course> courseCombo = new JComboBox<>();
+
+        CourseDAO courseDAO = new CourseDAO();
+
+        for (Course course : courseDAO.getAll()) {
+
+            courseCombo.addItem(course);
+
+            if (course.getCourseId() == enrollment.getCourseId()) {
+                courseCombo.setSelectedItem(course);
+            }
+        }
 
         JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
 
@@ -187,19 +227,21 @@ public class EnrollmentPanel extends JPanel {
         panel.add(dateField);
 
         panel.add(new JLabel("School Year:"));
-        panel.add(schoolYearField);
+        panel.add(schoolYearCombo);
 
         panel.add(new JLabel("Semester:"));
         panel.add(semesterCombo);
 
-        panel.add(new JLabel("Student ID:"));
-        panel.add(studentIdField);
+        panel.add(new JLabel("Student:"));
+        panel.add(studentCombo);
 
-        panel.add(new JLabel("Course ID:"));
-        panel.add(courseIdField);
+        panel.add(new JLabel("Course:"));
+        panel.add(courseCombo);
 
         int result = JOptionPane.showConfirmDialog(
-                this, panel, "Edit Enrollment",
+                this,
+                panel,
+                "Edit Enrollment",
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE
         );
@@ -207,11 +249,21 @@ public class EnrollmentPanel extends JPanel {
         if (result != JOptionPane.OK_OPTION) return;
 
         try {
+
             enrollment.setEnrollmentDate(dateField.getText().trim());
-            enrollment.setSchoolYear(schoolYearField.getText().trim());
+            enrollment.setSchoolYear((String) schoolYearCombo.getSelectedItem());
             enrollment.setSemester((String) semesterCombo.getSelectedItem());
-            enrollment.setStudentId(Integer.parseInt(studentIdField.getText().trim()));
-            enrollment.setCourseId(Integer.parseInt(courseIdField.getText().trim()));
+
+            Student selectedStudent = (Student) studentCombo.getSelectedItem();
+            Course selectedCourse = (Course) courseCombo.getSelectedItem();
+
+            if (selectedStudent != null) {
+                enrollment.setStudentId(selectedStudent.getStudentId());
+            }
+
+            if (selectedCourse != null) {
+                enrollment.setCourseId(selectedCourse.getCourseId());
+            }
 
             dao.update(enrollment);
 
@@ -219,12 +271,15 @@ public class EnrollmentPanel extends JPanel {
             loadEnrollments();
 
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Failed to update enrollment.\n" + ex.getMessage());
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Failed to update enrollment.\n" + ex.getMessage()
+            );
         }
     }
 
     private void deleteEnrollment() {
-
         int row = enrollmentTable.getSelectedRow();
 
         if (row == -1) {
@@ -244,16 +299,22 @@ public class EnrollmentPanel extends JPanel {
         if (choice != JOptionPane.YES_OPTION) return;
 
         try {
+
             new EnrollmentDAO().delete(enrollmentId);
+
             JOptionPane.showMessageDialog(this, "Enrollment deleted successfully.");
             loadEnrollments();
+
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Failed to delete enrollment.\n" + ex.getMessage());
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Failed to delete enrollment.\n" + ex.getMessage()
+            );
         }
     }
 
     private void loadEnrollments() {
-
         tableModel.setRowCount(0);
 
         EnrollmentDAO enrollmentDAO = new EnrollmentDAO();
@@ -262,7 +323,10 @@ public class EnrollmentPanel extends JPanel {
 
         List<Enrollment> enrollments = enrollmentDAO.getAll();
 
+        if (enrollments == null) return;
+
         for (Enrollment enrollment : enrollments) {
+            if (enrollment == null) continue;
 
             Student student = studentDAO.getById(enrollment.getStudentId());
             Course course = courseDAO.getById(enrollment.getCourseId());
@@ -287,7 +351,6 @@ public class EnrollmentPanel extends JPanel {
     }
 
     private void searchEnrollments() {
-
         String input = searchField.getText().trim();
 
         if (input.isEmpty()) {
@@ -296,9 +359,9 @@ public class EnrollmentPanel extends JPanel {
         }
 
         try {
-            int id = Integer.parseInt(input);
+            int enrollmentId = Integer.parseInt(input);
 
-            Enrollment enrollment = new EnrollmentDAO().getById(id);
+            Enrollment enrollment = new EnrollmentDAO().getById(enrollmentId);
 
             tableModel.setRowCount(0);
 
@@ -328,7 +391,10 @@ public class EnrollmentPanel extends JPanel {
             });
 
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid Enrollment ID.");
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please enter a valid Enrollment ID."
+            );
         }
     }
 }

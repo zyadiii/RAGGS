@@ -1,8 +1,12 @@
 package frontend.panels;
 
 import backend.dao.GradeDAO;
+import backend.dao.StudentDAO;
+import backend.dao.CourseDAO;
 import backend.dao.EnrollmentDAO;
 import backend.models.Grade;
+import backend.models.Student;
+import backend.models.Course;
 import backend.models.Enrollment;
 
 import javax.swing.*;
@@ -13,12 +17,7 @@ import java.util.List;
 public class GradePanel extends JPanel {
 
     private JTextField searchField;
-
     private JButton searchButton;
-    private JButton addButton;
-    private JButton editButton;
-    private JButton deleteButton;
-    private JButton refreshButton;
 
     private JTable gradeTable;
     private DefaultTableModel tableModel;
@@ -27,23 +26,21 @@ public class GradePanel extends JPanel {
 
         setLayout(new BorderLayout(10, 10));
 
-        // ================= SEARCH PANEL =================
-        JPanel searchPanel = new JPanel(new BorderLayout(10, 10));
+        JPanel topPanel = new JPanel(new BorderLayout(10, 10));
 
         searchField = new JTextField();
         searchButton = new JButton("Search");
 
-        searchPanel.add(searchField, BorderLayout.CENTER);
-        searchPanel.add(searchButton, BorderLayout.EAST);
+        topPanel.add(searchField, BorderLayout.CENTER);
+        topPanel.add(searchButton, BorderLayout.EAST);
 
-        add(searchPanel, BorderLayout.NORTH);
+        add(topPanel, BorderLayout.NORTH);
 
-        // ================= TABLE =================
         String[] columnNames = {
                 "ID",
                 "Final Grade",
                 "Remarks",
-                "Enrollment ID"
+                "Enrollment"
         };
 
         tableModel = new DefaultTableModel(columnNames, 0) {
@@ -56,29 +53,18 @@ public class GradePanel extends JPanel {
         gradeTable = new JTable(tableModel);
         gradeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        add(new JScrollPane(gradeTable), BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(gradeTable);
+        add(scrollPane, BorderLayout.CENTER);
 
-        // ================= BUTTON PANEL =================
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-
-        addButton = new JButton("Add");
-        editButton = new JButton("Edit");
-        deleteButton = new JButton("Delete");
-        refreshButton = new JButton("Refresh");
-
-        buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(refreshButton);
+        CRUDButtonPanel buttonPanel = new CRUDButtonPanel();
 
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // ================= ACTIONS =================
         searchButton.addActionListener(e -> searchGrades());
-        refreshButton.addActionListener(e -> loadGrades());
-        addButton.addActionListener(e -> addGrade());
-        editButton.addActionListener(e -> editGrade());
-        deleteButton.addActionListener(e -> deleteGrade());
+        buttonPanel.getRefreshButton().addActionListener(e -> loadGrades());
+        buttonPanel.getAddButton().addActionListener(e -> addGrade());
+        buttonPanel.getEditButton().addActionListener(e -> editGrade());
+        buttonPanel.getDeleteButton().addActionListener(e -> deleteGrade());
 
         loadGrades();
     }
@@ -90,58 +76,90 @@ public class GradePanel extends JPanel {
         JTextField remarksField = new JTextField();
 
         JComboBox<Enrollment> enrollmentCombo = new JComboBox<>();
+
+        JTextField studentField = new JTextField();
+        studentField.setEditable(false);
+
+        JTextField courseField = new JTextField();
+        courseField.setEditable(false);
+
         EnrollmentDAO enrollmentDAO = new EnrollmentDAO();
+        StudentDAO studentDAO = new StudentDAO();
+        CourseDAO courseDAO = new CourseDAO();
 
         for (Enrollment enrollment : enrollmentDAO.getAll()) {
             enrollmentCombo.addItem(enrollment);
         }
 
-        JPanel formPanel = new JPanel(new GridLayout(0, 2, 5, 5));
+        enrollmentCombo.addActionListener(e -> {
+            Enrollment selected = (Enrollment) enrollmentCombo.getSelectedItem();
 
-        formPanel.add(new JLabel("Final Grade:"));
-        formPanel.add(finalGradeField);
+            if (selected != null) {
+                Student student = studentDAO.getById(selected.getStudentId());
+                Course course = courseDAO.getById(selected.getCourseId());
 
-        formPanel.add(new JLabel("Remarks:"));
-        formPanel.add(remarksField);
+                studentField.setText(student != null
+                        ? student.getFirstName() + " " + student.getLastName()
+                        : "");
 
-        formPanel.add(new JLabel("Enrollment:"));
-        formPanel.add(enrollmentCombo);
+                courseField.setText(course != null
+                        ? course.getCourseCode() + " - " + course.getCourseName()
+                        : "");
+            }
+        });
 
-        int dialogResult = JOptionPane.showConfirmDialog(
+        if (enrollmentCombo.getItemCount() > 0) {
+            enrollmentCombo.setSelectedIndex(0);
+        }
+
+        JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
+
+        panel.add(new JLabel("Final Grade:"));
+        panel.add(finalGradeField);
+
+        panel.add(new JLabel("Remarks:"));
+        panel.add(remarksField);
+
+        panel.add(new JLabel("Enrollment:"));
+        panel.add(enrollmentCombo);
+
+        panel.add(new JLabel("Student:"));
+        panel.add(studentField);
+
+        panel.add(new JLabel("Course:"));
+        panel.add(courseField);
+
+        int result = JOptionPane.showConfirmDialog(
                 this,
-                formPanel,
+                panel,
                 "Add Grade",
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE
         );
 
-        if (dialogResult != JOptionPane.OK_OPTION) {
-            return;
-        }
+        if (result != JOptionPane.OK_OPTION) return;
 
         try {
-
             Grade grade = new Grade();
 
             grade.setFinalGrade(Double.parseDouble(finalGradeField.getText().trim()));
             grade.setRemarks(remarksField.getText().trim());
 
-            Enrollment selectedEnrollment =
-                    (Enrollment) enrollmentCombo.getSelectedItem();
+            Enrollment selectedEnrollment = (Enrollment) enrollmentCombo.getSelectedItem();
 
-            grade.setEnrollmentId(selectedEnrollment.getEnrollmentId());
+            if (selectedEnrollment != null) {
+                grade.setEnrollmentId(selectedEnrollment.getEnrollmentId());
+            }
 
-            GradeDAO gradeDAO = new GradeDAO();
-            gradeDAO.create(grade);
+            new GradeDAO().create(grade);
 
             JOptionPane.showMessageDialog(this, "Grade added successfully.");
             loadGrades();
 
-        } catch (Exception exception) {
-
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(
                     this,
-                    "Failed to add grade.\n" + exception.getMessage()
+                    "Failed to add grade.\n" + ex.getMessage()
             );
         }
     }
@@ -149,14 +167,14 @@ public class GradePanel extends JPanel {
     // ================= EDIT =================
     private void editGrade() {
 
-        int selectedRow = gradeTable.getSelectedRow();
+        int row = gradeTable.getSelectedRow();
 
-        if (selectedRow == -1) {
+        if (row == -1) {
             JOptionPane.showMessageDialog(this, "Please select a grade.");
             return;
         }
 
-        int gradeId = (int) tableModel.getValueAt(selectedRow, 0);
+        int gradeId = (int) tableModel.getValueAt(row, 0);
 
         GradeDAO gradeDAO = new GradeDAO();
         Grade grade = gradeDAO.getById(gradeId);
@@ -172,48 +190,65 @@ public class GradePanel extends JPanel {
         JTextField remarksField =
                 new JTextField(grade.getRemarks());
 
-        JTextField enrollmentIdField =
-                new JTextField(String.valueOf(grade.getEnrollmentId()));
+        JComboBox<Enrollment> enrollmentCombo = new JComboBox<>();
+        EnrollmentDAO enrollmentDAO = new EnrollmentDAO();
 
-        JPanel formPanel = new JPanel(new GridLayout(0, 2, 5, 5));
+        for (Enrollment enrollment : enrollmentDAO.getAll()) {
+            enrollmentCombo.addItem(enrollment);
 
-        formPanel.add(new JLabel("Final Grade:"));
-        formPanel.add(finalGradeField);
+            if (enrollment.getEnrollmentId() == grade.getEnrollmentId()) {
+                enrollmentCombo.setSelectedItem(enrollment);
+            }
+        }
 
-        formPanel.add(new JLabel("Remarks:"));
-        formPanel.add(remarksField);
+        JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
 
-        formPanel.add(new JLabel("Enrollment ID:"));
-        formPanel.add(enrollmentIdField);
+        panel.add(new JLabel("Final Grade:"));
+        panel.add(finalGradeField);
 
-        int dialogResult = JOptionPane.showConfirmDialog(
+        panel.add(new JLabel("Remarks:"));
+        panel.add(remarksField);
+
+        panel.add(new JLabel("Enrollment:"));
+        panel.add(enrollmentCombo);
+
+        int result = JOptionPane.showConfirmDialog(
                 this,
-                formPanel,
+                panel,
                 "Edit Grade",
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE
         );
 
-        if (dialogResult != JOptionPane.OK_OPTION) {
-            return;
-        }
+        if (result != JOptionPane.OK_OPTION) return;
 
         try {
 
-            grade.setFinalGrade(Double.parseDouble(finalGradeField.getText().trim()));
-            grade.setRemarks(remarksField.getText().trim());
-            grade.setEnrollmentId(Integer.parseInt(enrollmentIdField.getText().trim()));
+            grade.setFinalGrade(
+                    Double.parseDouble(finalGradeField.getText().trim())
+            );
+
+            grade.setRemarks(
+                    remarksField.getText().trim()
+            );
+
+            Enrollment selectedEnrollment =
+                    (Enrollment) enrollmentCombo.getSelectedItem();
+
+            if (selectedEnrollment != null) {
+                grade.setEnrollmentId(selectedEnrollment.getEnrollmentId());
+            }
 
             gradeDAO.update(grade);
 
             JOptionPane.showMessageDialog(this, "Grade updated successfully.");
             loadGrades();
 
-        } catch (Exception exception) {
+        } catch (Exception ex) {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Failed to update grade.\n" + exception.getMessage()
+                    "Failed to update grade.\n" + ex.getMessage()
             );
         }
     }
@@ -242,7 +277,6 @@ public class GradePanel extends JPanel {
         }
 
         try {
-
             GradeDAO gradeDAO = new GradeDAO();
             gradeDAO.delete(gradeId);
 
@@ -264,17 +298,43 @@ public class GradePanel extends JPanel {
         tableModel.setRowCount(0);
 
         GradeDAO gradeDAO = new GradeDAO();
-        List<Grade> gradeList = gradeDAO.getAll();
+        EnrollmentDAO enrollmentDAO = new EnrollmentDAO();
+        StudentDAO studentDAO = new StudentDAO();
+        CourseDAO courseDAO = new CourseDAO();
 
-        if (gradeList == null) return;
+        List<Grade> grades = gradeDAO.getAll();
 
-        for (Grade grade : gradeList) {
+        for (Grade grade : grades) {
+
+            Enrollment enrollment =
+                    enrollmentDAO.getById(grade.getEnrollmentId());
+
+            String enrollmentInfo = "";
+
+            if (enrollment != null) {
+
+                Student student =
+                        studentDAO.getById(enrollment.getStudentId());
+
+                Course course =
+                        courseDAO.getById(enrollment.getCourseId());
+
+                String studentName = student != null
+                        ? student.getFirstName() + " " + student.getLastName()
+                        : "";
+
+                String courseCode = course != null
+                        ? course.getCourseCode()
+                        : "";
+
+                enrollmentInfo = studentName + " - " + courseCode;
+            }
 
             tableModel.addRow(new Object[]{
                     grade.getGradeId(),
                     grade.getFinalGrade(),
                     grade.getRemarks(),
-                    grade.getEnrollmentId()
+                    enrollmentInfo
             });
         }
     }
@@ -282,38 +342,63 @@ public class GradePanel extends JPanel {
     // ================= SEARCH =================
     private void searchGrades() {
 
-        String searchInput = searchField.getText().trim();
+        String input = searchField.getText().trim();
 
-        if (searchInput.isEmpty()) {
+        if (input.isEmpty()) {
             loadGrades();
             return;
         }
 
         try {
 
-            int gradeId = Integer.parseInt(searchInput);
+            int gradeId = Integer.parseInt(input);
 
-            GradeDAO gradeDAO = new GradeDAO();
-            Grade grade = gradeDAO.getById(gradeId);
+            Grade grade = new GradeDAO().getById(gradeId);
 
             tableModel.setRowCount(0);
 
-            if (grade != null) {
-
-                tableModel.addRow(new Object[]{
-                        grade.getGradeId(),
-                        grade.getFinalGrade(),
-                        grade.getRemarks(),
-                        grade.getEnrollmentId()
-                });
-
-            } else {
+            if (grade == null) {
                 JOptionPane.showMessageDialog(this, "Grade not found.");
+                return;
             }
 
-        } catch (NumberFormatException exception) {
+            Enrollment enrollment =
+                    new EnrollmentDAO().getById(grade.getEnrollmentId());
 
-            JOptionPane.showMessageDialog(this, "Please enter a valid Grade ID.");
+            String enrollmentInfo = "";
+
+            if (enrollment != null) {
+
+                Student student =
+                        new StudentDAO().getById(enrollment.getStudentId());
+
+                Course course =
+                        new CourseDAO().getById(enrollment.getCourseId());
+
+                String studentName = student != null
+                        ? student.getFirstName() + " " + student.getLastName()
+                        : "";
+
+                String courseCode = course != null
+                        ? course.getCourseCode()
+                        : "";
+
+                enrollmentInfo = studentName + " - " + courseCode;
+            }
+
+            tableModel.addRow(new Object[]{
+                    grade.getGradeId(),
+                    grade.getFinalGrade(),
+                    grade.getRemarks(),
+                    enrollmentInfo
+            });
+
+        } catch (NumberFormatException e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please enter a valid Grade ID."
+            );
         }
     }
 }

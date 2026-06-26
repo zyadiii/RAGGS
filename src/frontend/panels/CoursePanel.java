@@ -11,18 +11,12 @@ import java.util.List;
 public class CoursePanel extends JPanel {
 
     private JTextField searchField;
-
     private JButton searchButton;
-    private JButton addButton;
-    private JButton editButton;
-    private JButton deleteButton;
-    private JButton refreshButton;
 
     private JTable courseTable;
     private DefaultTableModel tableModel;
 
     public CoursePanel() {
-
         setLayout(new BorderLayout(10, 10));
 
         JPanel topPanel = new JPanel(new BorderLayout(10, 10));
@@ -52,27 +46,18 @@ public class CoursePanel extends JPanel {
         courseTable = new JTable(tableModel);
         courseTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        add(new JScrollPane(courseTable), BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(courseTable);
+        add(scrollPane, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-
-        addButton = new JButton("Add");
-        editButton = new JButton("Edit");
-        deleteButton = new JButton("Delete");
-        refreshButton = new JButton("Refresh");
-
-        buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(refreshButton);
+        CRUDButtonPanel buttonPanel = new CRUDButtonPanel();
 
         add(buttonPanel, BorderLayout.SOUTH);
 
         searchButton.addActionListener(e -> searchCourses());
-        refreshButton.addActionListener(e -> loadCourses());
-        addButton.addActionListener(e -> addCourse());
-        editButton.addActionListener(e -> editCourse());
-        deleteButton.addActionListener(e -> deleteCourse());
+        buttonPanel.getRefreshButton().addActionListener(e -> loadCourses());
+        buttonPanel.getAddButton().addActionListener(e -> addCourse());
+        buttonPanel.getEditButton().addActionListener(e -> editCourse());
+        buttonPanel.getDeleteButton().addActionListener(e -> deleteCourse());
 
         loadCourses();
     }
@@ -117,8 +102,8 @@ public class CoursePanel extends JPanel {
             loadCourses();
 
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this,
-                    "Failed to add course.\n" + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Failed to add course.\n" + ex.getMessage()
+            );
         }
     }
 
@@ -177,8 +162,10 @@ public class CoursePanel extends JPanel {
             loadCourses();
 
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this,
-                    "Failed to update course.\n" + ex.getMessage());
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Failed to update course.\n" + ex.getMessage()
+            );
         }
     }
 
@@ -209,8 +196,7 @@ public class CoursePanel extends JPanel {
             loadCourses();
 
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this,
-                    "Failed to delete course.\n" + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Failed to delete course.\n" + ex.getMessage());
         }
     }
 
@@ -220,7 +206,11 @@ public class CoursePanel extends JPanel {
 
         List<Course> courses = new CourseDAO().getAll();
 
+        if (courses == null) return;
+
         for (Course course : courses) {
+            if (course == null) continue;
+
             tableModel.addRow(new Object[]{
                     course.getCourseId(),
                     course.getCourseCode(),
@@ -253,6 +243,7 @@ public class CoursePanel extends JPanel {
                         course.getCourseName(),
                         course.getUnits()
                 });
+
             } else {
                 JOptionPane.showMessageDialog(this, "Course not found.");
             }

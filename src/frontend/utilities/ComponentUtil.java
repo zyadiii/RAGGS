@@ -122,4 +122,21 @@ public class ComponentUtil {
 
         return button;
     }
+
+    public static JLabel createDashboardCard(String title, int value) {
+
+        JLabel label = new JLabel("", SwingConstants.CENTER);
+
+        ThemeUtil.styleCard(label);
+
+        label.setText("""
+            <html><center>
+            <div style='font-size:18px;font-weight:bold;'>%s</div>
+            <br>
+            <div style='font-size:36px;'>%d</div>
+            </center></html>
+            """.formatted(title, value));
+
+        return label;
+    }
 }

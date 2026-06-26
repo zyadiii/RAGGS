@@ -73,4 +73,9 @@ public class Enrollment {
     public void setCourseId(int courseId) {
         this.courseId = courseId;
     }
+
+    @Override
+    public String toString() {
+        return "Enrollment #" + enrollmentId;
+    }
 }

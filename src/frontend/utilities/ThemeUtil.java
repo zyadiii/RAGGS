@@ -1,11 +1,21 @@
 package frontend.utilities;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 
 public class ThemeUtil {
 
     private ThemeUtil() {}
+
+    public static void applyWindowTheme(Container container) {
+        container.setBackground(Theme.BACKGROUND);
+    }
+
+    public static void stylePanel(JPanel panel) {
+        panel.setBackground(Theme.BACKGROUND);
+    }
 
     public static void styleTextField(JTextField field) {
         field.setFont(Theme.NORMAL_FONT);
@@ -34,7 +44,32 @@ public class ThemeUtil {
         label.setForeground(Theme.TEXT);
     }
 
-    public static void applyWindowTheme(Container container) {
-        container.setBackground(Theme.BACKGROUND);
+    public static void styleTitle(JLabel label) {
+        label.setFont(Theme.TITLE_FONT);
+        label.setForeground(Theme.TEXT);
+    }
+
+    public static void styleTable(JTable table) {
+
+        table.setFont(Theme.NORMAL_FONT);
+        table.setRowHeight(28);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        JTableHeader header = table.getTableHeader();
+        header.setFont(Theme.HEADER_FONT);
+        header.setBackground(Theme.PRIMARY);
+        header.setForeground(Color.WHITE);
+    }
+
+    public static void styleCard(JLabel label) {
+
+        label.setOpaque(true);
+        label.setBackground(Theme.CARD_BACKGROUND);
+        label.setForeground(Theme.TEXT);
+
+        Border outer = BorderFactory.createLineBorder(Theme.BORDER);
+        Border inner = BorderFactory.createEmptyBorder(25, 20, 25, 20);
+
+        label.setBorder(BorderFactory.createCompoundBorder(outer, inner));
     }
 }
